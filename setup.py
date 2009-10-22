@@ -14,8 +14,11 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+import jump
+
+
 setup(name='jump',
-      version='0.9',
+      version=jump.VERSION,
       description='Distributing Jython Scripts in a Jump!',
       license="GPLv3",
       author='Olli Wang',
@@ -30,6 +33,8 @@ setup(name='jump',
       # -*- Entry points: -*-
       [console_scripts]
       jump = jump.commands:jump_command
+
+      [jump.commands]
       """,
       classifiers=[
           'Intended Audience :: Developers',
