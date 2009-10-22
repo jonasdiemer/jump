@@ -20,7 +20,7 @@ from mako.template import Template
 import jump
 
 
-class Error(Exception):
+class CommandError(Exception):
     pass
 
 class OptionParser(object):
@@ -128,6 +128,19 @@ class Command(object):
             command_instance = self
         # Execute the command
         command_instance.command(args, options)
+        try:
+            # Determine the command instance
+            command_name = args[0] if args else None
+            if command_name in command_classes:
+                args.pop(0)     # Remove the subcommand argument
+                command_class = command_classes[command_name]
+                command_instance = command_class()
+            else:
+                command_instance = self
+            # Execute the command
+            command_instance.command(args, options)
+        except CommandError, e:
+            print e.message
 
     def command(self, args, options):
         """The real place to execute the command.
