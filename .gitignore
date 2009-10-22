@@ -3,6 +3,7 @@
 *.pyc
 *.pyo
 *.egg-info
+*$py.class
 
 build
 dist
