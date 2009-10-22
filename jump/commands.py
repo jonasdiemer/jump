@@ -104,7 +104,7 @@ class Command(object):
                 command_class = command.load()
 
                 # Add group options if specified
-                if hasattr(command_class, 'parser') and \
+                if hasattr(command_class.__class__, 'parser') and \
                    isinstance(command_class.parser, OptionParser):
                     option_group = optparse.OptionGroup(parser, command.name)
                     command_class.parser.add_options_to_parser(option_group)
