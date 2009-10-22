@@ -118,16 +118,6 @@ class Command(object):
 
         # Parse arguments from command line
         (options, args) = parser.parse_args(list(args))
-        # Determine the command instance
-        command_name = args[0] if args else None
-        if command_name in command_classes:
-            args.pop(0)     # Remove the subcommand argument
-            command_class = command_classes[command_name]
-            command_instance = command_class()
-        else:
-            command_instance = self
-        # Execute the command
-        command_instance.command(args, options)
         try:
             # Determine the command instance
             command_name = args[0] if args else None
