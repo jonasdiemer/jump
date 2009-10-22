@@ -15,6 +15,8 @@ import pkg_resources
 
 import optparse
 
+from mako.template import Template
+
 import jump
 
 
@@ -165,16 +167,31 @@ class JumpDistCommand(JumpCommand):
     Make a distribution.
     """
     # Folder paths
-    lib_dir = './lib'
-    dist_dir = './dist'
-    build_dir = './build'
-    build_lib_dir = build_dir + '/lib'
-    build_classes_dir = build_dir + '/classes'
-    build_temp_dir = build_dir + '/temp'
+    base_dir = os.getcwd()
+    lib_dir = os.path.join(base_dir, 'lib')
+    dist_dir = os.path.join(base_dir, 'dist')
+    build_dir = os.path.join(base_dir, 'build')
+    build_lib_dir = os.path.join(build_dir, 'lib')
+    build_class_dir = os.path.join(build_dir, 'class')
+    build_temp_dir = os.path.join(build_dir, 'temp')
+    # File paths
+    build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
+    config_filename = os.path.join(base_dir, 'config.jp')
     # .jar files
     jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
     onejar_jar_filename = os.path.join(jump.lib_dir,
                                        'one-jar-ant-task-0.96.jar')
+    # Templates
+    build_template = os.path.join(jump.template_dir, 'build.mako')
+    # Template variables
+    build_xml_vars = {'base_dir': os.getcwd(),
+                      'lib_dir': lib_dir,
+                      'dist_dir': dist_dir,
+                      'build_dir': build_lib_dir,
+                      'build_lib_dir': build_lib_dir,
+                      'build_class_dir': build_class_dir,
+                      'onejar_jar_filename': onejar_jar_filename,
+                      'lib_dir_exists': os.path.isdir(lib_dir)}
 
     def __init__(self):
         """Initialize build environment.
@@ -195,7 +212,7 @@ class JumpDistCommand(JumpCommand):
         if os.path.isdir(self.build_dir):
             shutil.rmtree(self.build_dir)
         os.mkdir(self.build_dir)
-        for dir_name in (self.build_lib_dir, self.build_classes_dir,
+        for dir_name in (self.build_lib_dir, self.build_class_dir,
                          self.build_temp_dir):
             os.mkdir(dir_name)
 
@@ -209,8 +226,21 @@ class JumpDistCommand(JumpCommand):
         # Copy `one-jar.jar` file to `build/temp` directory
         shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
 
+        # Generate variables used in build.xml
+        config = open(self.config_filename, 'r')
+        for line in config:
+            key, value = line.split('=')
+            self.build_xml_vars[key.strip()] = value.strip()
+        config.close()
+
+        # Create `build.xml` file in `build.temp` directory
+        build_tempalte = Template(filename=self.build_template)
+        build_xml = open(self.build_xml_filename, 'w')
+        build_xml.write(build_tempalte.render(**self.build_xml_vars))
+        build_xml.close()
+
     def command(self, args, options):
-        os.system('ant')
+        os.system('ant -buildfile %s' % self.build_xml_filename)
 
 def jump_command():
     """Runs the Jump command."""

@@ -27,7 +27,7 @@ setup(name='jump',
       packages=find_packages(exclude=['ez_setup']),
       include_package_data=True,
       zip_safe=False,
-      install_requires=[],
+      install_requires=['mako>=0.2.5'],
       extras_require = {},
       entry_points="""
       # -*- Entry points: -*-
