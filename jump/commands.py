@@ -7,8 +7,9 @@ Created by Olli Wang on 2009-10-21.
 Copyright (c) 2009 Ollix. All rights reserved.
 """
 
-import sys
 import os
+import sys
+import shutil
 
 import pkg_resources
 
@@ -163,6 +164,40 @@ class JumpDistCommand(JumpCommand):
 
     Make a distribution.
     """
+    lib_dir = './lib'
+    dist_dir = './dist'
+    build_dir = './build'
+    build_lib_dir = build_dir + '/lib'
+    build_classes_dir = build_dir + '/classes'
+
+    def __init__(self):
+        """Initialize build environment.
+
+        Creates some directories for build and distribution in the current
+        working directory, the added directories include:
+            CURRENT_DIRECTORY
+            |-- build           # build-related files
+            |   |-- lib         # .jar files
+            |   |-- classes     # Java bytecode class files
+            |-- dist            # distribution files
+
+        We also copy some .jar files into build/lib directory for distribution
+        or temporary use in distributing.
+        """
+        # Create `build` directory and nested directories
+        if os.path.isdir(self.build_dir):
+            shutil.rmtree(self.build_dir)
+        os.mkdir(self.build_dir)
+        for dir_name in (self.build_lib_dir, self.build_classes_dir):
+            os.mkdir(dir_name)
+
+        # Create `dist` directory if not exists
+        if not os.path.isdir(self.dist_dir):
+            os.mkdir(self.dist_dir)
+
+        # Copy `jython.jar` file to `build/lib` directory
+        jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
+        shutil.copy2(jython_jar_filename, self.build_lib_dir)
 
     def command(self, args, options):
         os.system('ant')
