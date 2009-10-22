@@ -130,7 +130,7 @@ class Command(object):
             # Execute the command
             command_instance.command(args, options)
         except CommandError, e:
-            print e.message
+            print 'Error:', e.message
 
     def command(self, args, options):
         """The real place to execute the command.
@@ -179,6 +179,7 @@ class JumpDistCommand(JumpCommand):
     build_temp_dir = os.path.join(build_dir, 'temp')
     # File paths
     build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
+    default_main_java = os.path.join(build_temp_dir, 'Main.java')
     config_filename = os.path.join(base_dir, 'config.jp')
     # .jar files
     jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
@@ -186,15 +187,17 @@ class JumpDistCommand(JumpCommand):
                                        'one-jar-ant-task-0.96.jar')
     # Templates
     build_template = os.path.join(jump.template_dir, 'build.xml.mako')
+    main_java_template = os.path.join(jump.template_dir, 'main.java.mako')
     # Template variables
-    build_xml_vars = {'base_dir': os.getcwd(),
-                      'lib_dir': lib_dir,
-                      'dist_dir': dist_dir,
-                      'build_dir': build_lib_dir,
-                      'build_lib_dir': build_lib_dir,
-                      'build_class_dir': build_class_dir,
-                      'onejar_jar_filename': onejar_jar_filename,
-                      'lib_dir_exists': os.path.isdir(lib_dir)}
+    config = {'base_dir': os.getcwd(),
+              'lib_dir': lib_dir,
+              'dist_dir': dist_dir,
+              'build_dir': build_lib_dir,
+              'build_lib_dir': build_lib_dir,
+              'build_class_dir': build_class_dir,
+              'build_temp_dir': build_temp_dir,
+              'onejar_jar_filename': onejar_jar_filename,
+              'lib_dir_exists': os.path.isdir(lib_dir)}
 
     def __init__(self):
         """Initialize build environment.
@@ -230,16 +233,52 @@ class JumpDistCommand(JumpCommand):
         shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
 
         # Generate variables used in build.xml
-        config = open(self.config_filename, 'r')
-        for line in config:
-            key, value = line.split('=')
-            self.build_xml_vars[key.strip()] = value.strip()
-        config.close()
+        config_file = open(self.config_filename, 'r')
+        for line in config_file:
+            # Ignore lines start with `#`
+            line = line.strip()
+            if line.startswith('#'):
+                continue
+
+            # Add parameters to `self.config` variable
+            try:
+                key, value = line.split('=')
+            except:
+                raise CommandError("Syntax error in config file.")
+            self.config[key.strip()] = value.strip()
+        config_file.close()
+
+        # Raise error if either a `java_main` or a `python_main` parameter
+        # is not specified in config file
+        if (self.config.has_key('java_main') and \
+            self.config.has_key('python_main')) or \
+           (not self.config.has_key('java_main') and \
+            not self.config.has_key('python_main')):
+            raise CommandError("You need to specify either a `java_main` or "
+                               "a `python_main` parameter in your config "\
+                               "file, but not both.")
+        # Use default Java main class if `python_main` is specified
+        elif self.config.has_key('python_main'):
+            try:
+                py_module, py_func = self.config['python_main'].split(':')
+            except ValueError:
+                raise CommandError("The `python_main` parameter should be " \
+                                   "set in the form of " \
+                                   "`some.module:main_function` in your " \
+                                   "config file.")
+            # Create the default Main.java file in `buile.temp` directory
+            main_template_vars = {'main_module': py_module,
+                                  'main_func': py_func}
+            main_java_tempalte = Template(filename=self.main_java_template)
+            main_java = open(self.default_main_java, 'w')
+            main_java.write(main_java_tempalte.render(**main_template_vars))
+            main_java.close()
+            self.config['java_main'] = 'com.ollix.jump.Main'
 
         # Create `build.xml` file in `build.temp` directory
         build_tempalte = Template(filename=self.build_template)
         build_xml = open(self.build_xml_filename, 'w')
-        build_xml.write(build_tempalte.render(**self.build_xml_vars))
+        build_xml.write(build_tempalte.render(**self.config))
         build_xml.close()
 
     def command(self, args, options):

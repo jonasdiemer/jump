@@ -1,17 +1,23 @@
 <project name="connected_sliders" default="dist">
 
-    <taskdef name="one-jar" 
-             classname="com.simontuffs.onejar.ant.OneJarTask" 
+    <taskdef name="one-jar"
+             classname="com.simontuffs.onejar.ant.OneJarTask"
              classpath="${onejar_jar_filename}"
              onerror="report"/>
-    
+
     <target name="dist">
         <javac destdir="${build_class_dir}" srcdir="${base_dir}">
             % if lib_dir_exists:
             <classpath location="${lib_dir}"/>
             % endif
         </javac>
-        
+
+        <javac destdir="${build_class_dir}" srcdir="${build_temp_dir}">
+            % if lib_dir_exists:
+            <classpath location="${lib_dir}"/>
+            % endif
+        </javac>
+
         <one-jar destfile="${dist_dir}/${project_name}.jar">
             <main>
                 <fileset dir="${build_class_dir}"/>
@@ -23,10 +29,10 @@
                 <fileset dir="${build_lib_dir}"/>
             </lib>
             <manifest>
-                <attribute name="Main-Class" 
+                <attribute name="Main-Class"
                            value="com.simontuffs.onejar.Boot"/>
                 <attribute name="One-Jar-Main-Class"
-                           value="${main_class}"/>
+                           value="${java_main}"/>
                 <attribute name="Built-By" value="Jump"/>
             </manifest>
             <fileset dir="${base_dir}">
@@ -34,5 +40,5 @@
             </fileset>
         </one-jar>
     </target>
-    
+
 </project>
