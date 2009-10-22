@@ -182,7 +182,7 @@ class JumpDistCommand(JumpCommand):
     onejar_jar_filename = os.path.join(jump.lib_dir,
                                        'one-jar-ant-task-0.96.jar')
     # Templates
-    build_template = os.path.join(jump.template_dir, 'build.mako')
+    build_template = os.path.join(jump.template_dir, 'build.xml.mako')
     # Template variables
     build_xml_vars = {'base_dir': os.getcwd(),
                       'lib_dir': lib_dir,
