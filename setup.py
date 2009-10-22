@@ -35,6 +35,7 @@ setup(name='jump',
       jump = jump.commands:jump_command
 
       [jump.commands]
+      dist = jump.commands:JumpDistCommand
       """,
       classifiers=[
           'Intended Audience :: Developers',

@@ -158,6 +158,15 @@ class JumpCommand(Command):
         """Returns help message."""
         JumpCommand().run('-h')
 
+class JumpDistCommand(JumpCommand):
+    """Jump dist command.
+
+    Make a distribution.
+    """
+
+    def command(self, args, options):
+        os.system('ant')
+
 def jump_command():
     """Runs the Jump command."""
     JumpCommand().run()
