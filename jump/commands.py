@@ -164,11 +164,17 @@ class JumpDistCommand(JumpCommand):
 
     Make a distribution.
     """
+    # Folder paths
     lib_dir = './lib'
     dist_dir = './dist'
     build_dir = './build'
     build_lib_dir = build_dir + '/lib'
     build_classes_dir = build_dir + '/classes'
+    build_temp_dir = build_dir + '/temp'
+    # .jar files
+    jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
+    onejar_jar_filename = os.path.join(jump.lib_dir,
+                                       'one-jar-ant-task-0.96.jar')
 
     def __init__(self):
         """Initialize build environment.
@@ -179,6 +185,7 @@ class JumpDistCommand(JumpCommand):
             |-- build           # build-related files
             |   |-- lib         # .jar files
             |   |-- classes     # Java bytecode class files
+            |   |-- temp        # temporary files
             |-- dist            # distribution files
 
         We also copy some .jar files into build/lib directory for distribution
@@ -188,7 +195,8 @@ class JumpDistCommand(JumpCommand):
         if os.path.isdir(self.build_dir):
             shutil.rmtree(self.build_dir)
         os.mkdir(self.build_dir)
-        for dir_name in (self.build_lib_dir, self.build_classes_dir):
+        for dir_name in (self.build_lib_dir, self.build_classes_dir,
+                         self.build_temp_dir):
             os.mkdir(dir_name)
 
         # Create `dist` directory if not exists
@@ -196,8 +204,10 @@ class JumpDistCommand(JumpCommand):
             os.mkdir(self.dist_dir)
 
         # Copy `jython.jar` file to `build/lib` directory
-        jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
-        shutil.copy2(jython_jar_filename, self.build_lib_dir)
+        shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
+
+        # Copy `one-jar.jar` file to `build/temp` directory
+        shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
 
     def command(self, args, options):
         os.system('ant')
