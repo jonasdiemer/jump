@@ -28,6 +28,8 @@ setup(name='jump',
       extras_require = {},
       entry_points="""
       # -*- Entry points: -*-
+      [console_scripts]
+      jump = jump.commands:jump_command
       """,
       classifiers=[
           'Intended Audience :: Developers',
