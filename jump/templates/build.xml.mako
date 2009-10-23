@@ -32,7 +32,7 @@
                 <attribute name="Main-Class"
                            value="com.simontuffs.onejar.Boot"/>
                 <attribute name="One-Jar-Main-Class"
-                           value="${java_main}"/>
+                           value="${main_class}"/>
                 <attribute name="Built-By" value="Jump"/>
             </manifest>
         </one-jar>

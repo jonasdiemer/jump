@@ -241,32 +241,25 @@ class JumpDistCommand(JumpCommand):
 
     def setup_main_entry_point(self):
         """Setup main entry point."""
-        # Raise error if either a `java_main` or a `python_main` parameter
-        # is not specified in config file
-        if (self.config.has_key('java_main') and \
-            self.config.has_key('python_main')) or \
-           (not self.config.has_key('java_main') and \
-            not self.config.has_key('python_main')):
-            raise CommandError("You need to specify either a `java_main` or "
-                               "a `python_main` parameter in your config "\
-                               "file, but not both.")
-        # Use default Java main class if `python_main` is specified
-        elif self.config.has_key('python_main'):
-            try:
-                py_module, py_func = self.config['python_main'].split(':')
-            except ValueError:
-                raise CommandError("The `python_main` parameter should be " \
-                                   "set in the form of " \
-                                   "`some.module:main_function` in your " \
-                                   "config file.")
-            # Create the default Main.java file in `buile.temp` directory
-            main_template_vars = {'main_module': py_module,
-                                  'main_func': py_func}
+        # Display error message if `main_entry_point` not specified
+        if 'main_entry_point' not in self.config:
+            raise CommandError("`main_entry_point` parameter is required " \
+                                "in your config file.")
+        # Interpret `main_entry_point` parameter
+        try:
+            py_module, py_func = self.config['main_entry_point'].split(':')
+        except ValueError:
+            # Set Java main class
+            self.config['main_class'] = self.config['main_entry_point']
+        else:
+            # Use default Main.java file to trigger Python main entry point
+            main_template_vars = {'py_main_module': py_module,
+                                  'py_main_func': py_func}
             main_java_tempalte = Template(filename=self.main_java_template)
             main_java = open(self.default_main_java, 'w')
             main_java.write(main_java_tempalte.render(**main_template_vars))
             main_java.close()
-            self.config['java_main'] = 'com.ollix.jump.Main'
+            self.config['main_class'] = 'com.ollix.jump.Main'
 
     def copy_required_jar(self):
         """Copies required `.jar` files to `build` directory."""
