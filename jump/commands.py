@@ -146,14 +146,23 @@ class Command(object):
             command_instance.command(args, options)
         except CommandError, e:
             print 'Error:', e.message
+        # Execute clean function
+        command_instance.clean()
 
     def command(self, args, options):
         """The real place to execute the command.
 
-        This method should implemented manually in subclasses in order to
+        This method should be implemented manually in subclasses in order to
         execute the command.
         """
         raise NotImplementedError()
+
+    def clean(self):
+        """Executed after each command terminated.
+
+        This method should be implemented manually in subclasses.
+        """
+        pass
 
 class JumpCommand(Command):
     """The basic Jump command.
@@ -335,6 +344,11 @@ class JumpDistCommand(JumpCommand):
         self.copy_required_libs()
         self.create_build_xml()
         os.system('ant -buildfile %s' % self.build_xml_filename)
+
+    def clean(self):
+        """Removes all generated files used for build."""
+        # Remove `build` directory
+        shutil.rmtree(self.build_dir)
 
 def jump_command():
     """Runs the Jump command."""
