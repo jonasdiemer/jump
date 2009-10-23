@@ -282,6 +282,15 @@ class JumpDistCommand(JumpCommand):
         build_xml.write(build_tempalte.render(**self.config))
         build_xml.close()
 
+        # Compile Python source code to $py.class file and copy it to
+        # `build/class` directory
+        lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False)
+        lib_locations = lib_tracer.get_lib_locations()
+        for sys_path, relative_path in lib_locations:
+            src_path = os.path.join(sys_path, relative_path)
+            dest_path = os.path.join(self.build_class_dir, relative_path)
+            shutil.copyfile(src_path, dest_path)
+
     def command(self, args, options):
         os.system('ant -buildfile %s' % self.build_xml_filename)
 

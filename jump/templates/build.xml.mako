@@ -35,9 +35,6 @@
                            value="${java_main}"/>
                 <attribute name="Built-By" value="Jump"/>
             </manifest>
-            <fileset dir="${base_dir}">
-                <include name="**/*.py"/>
-            </fileset>
         </one-jar>
     </target>
 
