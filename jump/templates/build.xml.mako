@@ -18,7 +18,7 @@
             % endif
         </javac>
 
-        <one-jar destfile="${dist_dir}/${project_name}.jar">
+        <one-jar destfile="${dist_dir}/${dist_name}.jar">
             <main>
                 <fileset dir="${build_class_dir}"/>
             </main>

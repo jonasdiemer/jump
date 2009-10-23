@@ -227,8 +227,8 @@ class JumpDistCommand(JumpCommand):
 
     # Set command options, these options could be set in a config file
     parser = OptionParser()
-    parser.add_option('-n', '--project_name', action="store",
-                      default=None, help="project name")
+    parser.add_option('-n', '--dist_name', action="store",
+                      default=None, help="name of the distribution file")
     parser.add_option('-m', '--main_entry_point', action="store",
                       default=None, help="main entry point, either Java or " \
                                          "Python")
@@ -278,14 +278,14 @@ class JumpDistCommand(JumpCommand):
 
     def update_config_with_options(self, options):
         """Update config parameters with command options."""
-        for option_name in ('project_name', 'main_entry_point'):
+        for option_name in ('dist_name', 'main_entry_point'):
             option_value = getattr(options, option_name)
             if option_value:
                 self.config[option_name] = option_value
 
     def check_required_parameters(self):
         """Check if required parameters are set."""
-        for name in ('project_name', 'main_entry_point'):
+        for name in ('dist_name', 'main_entry_point'):
             if name not in self.config:
                 raise CommandError("%r parameter is required." % name)
 
@@ -348,7 +348,7 @@ class JumpDistCommand(JumpCommand):
     def clean(self):
         """Removes all generated files used for build."""
         # Remove `build` directory
-        shutil.rmtree(self.build_dir)
+        # shutil.rmtree(self.build_dir)
 
 def jump_command():
     """Runs the Jump command."""
