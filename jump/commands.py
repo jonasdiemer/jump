@@ -235,9 +235,9 @@ class JumpDistCommand(JumpCommand):
         # Generate variables used in build.xml
         config_file = open(self.config_filename, 'r')
         for line in config_file:
-            # Ignore lines start with `#`
-            line = line.strip()
-            if line.startswith('#'):
+            # Ignore from `#` to the end of line
+            line = line.split('#')[0].strip()
+            if not line:
                 continue
 
             # Add parameters to `self.config` variable
