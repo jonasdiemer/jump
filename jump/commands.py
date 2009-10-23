@@ -199,6 +199,14 @@ class JumpDistCommand(JumpCommand):
               'onejar_jar_filename': onejar_jar_filename,
               'lib_dir_exists': os.path.isdir(lib_dir)}
 
+    # Set command options, these options could be set in a config file
+    parser = OptionParser()
+    parser.add_option('-n', '--project_name', action="store",
+                      default=None, help="project name")
+    parser.add_option('-m', '--main_entry_point', action="store",
+                      default=None, help="main entry point, either Java or " \
+                                         "Python")
+
     def __init__(self):
         """Initialize build environment.
 
@@ -239,12 +247,21 @@ class JumpDistCommand(JumpCommand):
             self.config[key.strip()] = value.strip()
         config_file.close()
 
+    def update_config_with_options(self, options):
+        """Update config parameters with command options."""
+        for option_name in ('project_name', 'main_entry_point'):
+            option_value = getattr(options, option_name)
+            if option_value:
+                self.config[option_name] = option_value
+
+    def check_required_parameters(self):
+        """Check if required parameters are set."""
+        for name in ('project_name', 'main_entry_point'):
+            if name not in self.config:
+                raise CommandError("%r parameter is required." % name)
+
     def setup_main_entry_point(self):
         """Setup main entry point."""
-        # Display error message if `main_entry_point` not specified
-        if 'main_entry_point' not in self.config:
-            raise CommandError("`main_entry_point` parameter is required " \
-                                "in your config file.")
         # Interpret `main_entry_point` parameter
         try:
             py_module, py_func = self.config['main_entry_point'].split(':')
@@ -291,6 +308,8 @@ class JumpDistCommand(JumpCommand):
     def command(self, args, options):
         """Executes the command."""
         self.populate_config_parameters()
+        self.update_config_with_options(options)
+        self.check_required_parameters()
         self.setup_main_entry_point()
         self.copy_required_jar()
         self.copy_required_libs()
