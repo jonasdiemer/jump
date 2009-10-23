@@ -210,9 +210,6 @@ class JumpDistCommand(JumpCommand):
             |   |-- classes     # Java bytecode class files
             |   |-- temp        # temporary files
             |-- dist            # distribution files
-
-        We also copy some .jar files into build/lib directory for distribution
-        or temporary use in distributing.
         """
         # Create `build` directory and nested directories
         if os.path.isdir(self.build_dir):
@@ -226,21 +223,14 @@ class JumpDistCommand(JumpCommand):
         if not os.path.isdir(self.dist_dir):
             os.mkdir(self.dist_dir)
 
-        # Copy `jython.jar` file to `build/lib` directory if not provided
-        if not os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
-            shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
-
-        # Copy `one-jar.jar` file to `build/temp` directory
-        shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
-
-        # Generate variables used in build.xml
+    def populate_config_parameters(self):
+        """Populates parameters from the config file."""
         config_file = open(self.config_filename, 'r')
         for line in config_file:
             # Ignore from `#` to the end of line
             line = line.split('#')[0].strip()
             if not line:
                 continue
-
             # Add parameters to `self.config` variable
             try:
                 key, value = line.split('=')
@@ -249,6 +239,8 @@ class JumpDistCommand(JumpCommand):
             self.config[key.strip()] = value.strip()
         config_file.close()
 
+    def setup_main_entry_point(self):
+        """Setup main entry point."""
         # Raise error if either a `java_main` or a `python_main` parameter
         # is not specified in config file
         if (self.config.has_key('java_main') and \
@@ -276,12 +268,17 @@ class JumpDistCommand(JumpCommand):
             main_java.close()
             self.config['java_main'] = 'com.ollix.jump.Main'
 
-        # Create `build.xml` file in `build.temp` directory
-        build_tempalte = Template(filename=self.build_template)
-        build_xml = open(self.build_xml_filename, 'w')
-        build_xml.write(build_tempalte.render(**self.config))
-        build_xml.close()
+    def copy_required_jar(self):
+        """Copies required `.jar` files to `build` directory."""
+        # Copy `jython.jar` file to `build/lib` directory if not provided
+        if not os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
+            shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
 
+        # Copy `one-jar.jar` file to `build/temp` directory
+        shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
+
+    def copy_required_libs(self):
+        """Copies required Python modules to `build/class` directory."""
         # Compile Python source code to $py.class file and copy it to
         # `build/class` directory
         lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False)
@@ -291,7 +288,20 @@ class JumpDistCommand(JumpCommand):
             dest_path = os.path.join(self.build_class_dir, relative_path)
             shutil.copyfile(src_path, dest_path)
 
+    def create_build_xml(self):
+        """Creates the `build.xml` file for ant in `build/temp`."""
+        build_tempalte = Template(filename=self.build_template)
+        build_xml = open(self.build_xml_filename, 'w')
+        build_xml.write(build_tempalte.render(**self.config))
+        build_xml.close()
+
     def command(self, args, options):
+        """Executes the command."""
+        self.populate_config_parameters()
+        self.setup_main_entry_point()
+        self.copy_required_jar()
+        self.copy_required_libs()
+        self.create_build_xml()
         os.system('ant -buildfile %s' % self.build_xml_filename)
 
 def jump_command():
