@@ -250,6 +250,9 @@ class JumpDistCommand(JumpCommand):
 
     def populate_config_parameters(self):
         """Populates parameters from the config file."""
+        if not os.path.isfile(self.config_filename):
+            return
+
         config_file = open(self.config_filename, 'r')
         for line in config_file:
             # Ignore from `#` to the end of line
