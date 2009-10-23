@@ -56,10 +56,12 @@ class Command(object):
     additional parameters to the `command` method in order to receive
     arguments and options received from command line. You also need to
     instantiate a OptionParser instance as a class variable for adding some
-    group options.
+    group options and a usage variable explaining what this command does.
 
     For example:
     class SomeCommand(Command):
+        usage = 'I can do something'
+
         parser = OptionParser()     # This line is required
         parser.add_option("-v", "--verbose", action="store_true",
                           default=False, help="run in verbose mode")
@@ -77,6 +79,18 @@ class Command(object):
     usage = '%prog [options] arg1 arg2 ...'
     version = None
 
+    def generate_usage(self):
+        """Generates usage messages for parser."""
+        usage = [self.usage]
+        # Add subcommand usages if available
+        if hasattr(self, 'subcmd_entry_point'):
+            usage.append("\n\nCommands:\n")
+            subcmd_entry_point = self.subcmd_entry_point
+            for command in pkg_resources.iter_entry_points(subcmd_entry_point):
+                command_class = command.load()
+                usage.append('  %s: %s' % (command.name, command_class.usage))
+        return ''.join(usage)
+
     def run(self, *args):
         """Executes the command.
 
@@ -90,7 +104,8 @@ class Command(object):
         if not args:
             args = sys.argv[1:]
 
-        parser = optparse.OptionParser(usage=self.usage, version=self.version)
+        parser = optparse.OptionParser(usage=self.generate_usage(),
+                                       version=self.version)
         # Add options to parser
         if hasattr(self, 'parser') and isinstance(self.parser, OptionParser):
             self.parser.add_options_to_parser(parser)
@@ -169,6 +184,8 @@ class JumpDistCommand(JumpCommand):
 
     Make a distribution.
     """
+    usage = "make a distribution file"
+
     # Folder paths
     base_dir = os.getcwd()
     lib_dir = os.path.join(base_dir, 'lib')
