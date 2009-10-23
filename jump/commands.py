@@ -226,8 +226,9 @@ class JumpDistCommand(JumpCommand):
         if not os.path.isdir(self.dist_dir):
             os.mkdir(self.dist_dir)
 
-        # Copy `jython.jar` file to `build/lib` directory
-        shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
+        # Copy `jython.jar` file to `build/lib` directory if not provided
+        if not os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
+            shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
 
         # Copy `one-jar.jar` file to `build/temp` directory
         shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
