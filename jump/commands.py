@@ -54,13 +54,13 @@ class Command(object):
     need to create a class inheriting from this base class and define a
     `command` method to do the real work. Note that you need to add two
     additional parameters to the `command` method in order to receive
-    arguments and options received from command line. You may also want to
-    instantiate a OptionParser instance as a class variable to add some group
-    options.
+    arguments and options received from command line. You also need to
+    instantiate a OptionParser instance as a class variable for adding some
+    group options.
 
     For example:
     class SomeCommand(Command):
-        parser = OptionParser()
+        parser = OptionParser()     # This line is required
         parser.add_option("-v", "--verbose", action="store_true",
                           default=False, help="run in verbose mode")
 
@@ -107,7 +107,7 @@ class Command(object):
                 command_class = command.load()
 
                 # Add group options if specified
-                if hasattr(command_class.__class__, 'parser') and \
+                if hasattr(command_class, 'parser') and \
                    isinstance(command_class.parser, OptionParser):
                     option_group = optparse.OptionGroup(parser, command.name)
                     command_class.parser.add_options_to_parser(option_group)
