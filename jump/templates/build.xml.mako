@@ -35,6 +35,9 @@
                            value="${main_class}"/>
                 <attribute name="Built-By" value="Jump"/>
             </manifest>
+            <fileset dir="${build_resc_dir}">
+                <include name="**"/>
+            </fileset>
         </one-jar>
     </target>
 

@@ -3,8 +3,21 @@
 """
 commands.py
 
-Created by Olli Wang on 2009-10-21.
+Created by Olli Wang (olliwang@ollix.com) on 2009-10-21.
 Copyright (c) 2009 Ollix. All rights reserved.
+
+This file is part of Jump.
+
+Jump is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or any later version.
+
+Jump is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
@@ -202,6 +215,7 @@ class JumpDistCommand(JumpCommand):
     build_dir = os.path.join(base_dir, 'build')
     build_lib_dir = os.path.join(build_dir, 'lib')
     build_class_dir = os.path.join(build_dir, 'class')
+    build_resc_dir = os.path.join(build_dir, 'resource')
     build_temp_dir = os.path.join(build_dir, 'temp')
     # File paths
     build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
@@ -214,6 +228,7 @@ class JumpDistCommand(JumpCommand):
     # Templates
     build_template = os.path.join(jump.template_dir, 'build.xml.mako')
     main_java_template = os.path.join(jump.template_dir, 'main.java.mako')
+    license_template = os.path.join(jump.template_dir, 'license.mako')
     # Template variables
     config = {'base_dir': os.getcwd(),
               'lib_dir': lib_dir,
@@ -221,6 +236,7 @@ class JumpDistCommand(JumpCommand):
               'build_dir': build_lib_dir,
               'build_lib_dir': build_lib_dir,
               'build_class_dir': build_class_dir,
+              'build_resc_dir': build_resc_dir,
               'build_temp_dir': build_temp_dir,
               'onejar_jar_filename': onejar_jar_filename,
               'lib_dir_exists': os.path.isdir(lib_dir)}
@@ -250,7 +266,7 @@ class JumpDistCommand(JumpCommand):
             shutil.rmtree(self.build_dir)
         os.mkdir(self.build_dir)
         for dir_name in (self.build_lib_dir, self.build_class_dir,
-                         self.build_temp_dir):
+                         self.build_resc_dir, self.build_temp_dir):
             os.mkdir(dir_name)
 
         # Create `dist` directory if not exists
@@ -327,6 +343,14 @@ class JumpDistCommand(JumpCommand):
             dest_path = os.path.join(self.build_class_dir, relative_path)
             shutil.copyfile(src_path, dest_path)
 
+    def copy_default_resources(self):
+        """Copies default resources to `build/resource` directory."""
+        # Generate default license file
+        license_tempalte = Template(filename=self.license_template)
+        license = open(os.path.join(self.build_resc_dir, 'LICENSE'), 'w')
+        license.write(license_tempalte.render())
+        license.close()
+
     def create_build_xml(self):
         """Creates the `build.xml` file for ant in `build/temp`."""
         build_tempalte = Template(filename=self.build_template)
@@ -342,6 +366,7 @@ class JumpDistCommand(JumpCommand):
         self.setup_main_entry_point()
         self.copy_required_jar()
         self.copy_required_libs()
+        self.copy_default_resources()
         self.create_build_xml()
         os.system('ant -buildfile %s' % self.build_xml_filename)
 
