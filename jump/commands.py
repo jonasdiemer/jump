@@ -377,7 +377,7 @@ class JumpDistCommand(JumpCommand):
     def clean(self):
         """Removes all generated files used for build."""
         # Remove `build` directory
-        # shutil.rmtree(self.build_dir)
+        shutil.rmtree(self.build_dir)
 
 def jump_command():
     """Runs the Jump command."""
