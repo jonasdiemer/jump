@@ -301,9 +301,13 @@ class JumpDistCommand(JumpCommand):
 
     def check_required_parameters(self):
         """Check if required parameters are set."""
-        for name in ('dist_name', 'main_entry_point'):
+        for name in ('main_entry_point',):
             if name not in self.config:
                 raise CommandError("%r parameter is required." % name)
+
+        # Set `dist_name` to the name of current directory if not specified
+        if 'dist_name' not in self.config:
+            self.config['dist_name'] = os.path.basename(self.base_dir)
 
     def setup_main_entry_point(self):
         """Setup main entry point."""
