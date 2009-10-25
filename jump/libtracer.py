@@ -144,7 +144,7 @@ class LibTracer(object):
             return
 
         try:
-            module = __import__(module_path)
+            module = self.get_module_by_module_path(module_path)
         except ImportError:
             return
         else:
@@ -168,6 +168,22 @@ class LibTracer(object):
             # Find modules recursively
             self.__find_modules_from_module_path(module_path)
 
+    def get_module_by_module_path(self, module_path):
+        """Gets Python module object by specified module path."""
+        # Import the module by module path
+        module = __import__(module_path)
+        try:
+            root_module_name, rest_module_path = module_path.split('.', 1)
+        except ValueError:
+            pass
+        else:
+            try:
+                module = getattr(module, rest_module_path)
+            except AttributeError:
+                pass
+
+        return module
+
     def get_lib_locations(self):
         """Gets library locations with system path and its relative path.
 
@@ -180,7 +196,8 @@ class LibTracer(object):
         module_paths = self.__find_modules_from_directory()
         lib_locations = []
         for module_path in module_paths:
-            module = __import__(module_path)
+            module = self.get_module_by_module_path(module_path)
+
             try:
                 module_filename = module.__file__
             except AttributeError:
