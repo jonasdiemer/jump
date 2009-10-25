@@ -5,18 +5,19 @@
              classpath="${onejar_jar_filename}"
              onerror="report"/>
 
-    <target name="dist">
-        <javac destdir="${build_class_dir}" srcdir="${base_dir}">
-            % if lib_dir_exists:
-            <classpath location="${lib_dir}"/>
-            % endif
-        </javac>
+    <path id="classpath">
+        % if lib_dir_exists:
+        <fileset dir="${lib_dir}" includes="**/*.jar"/>
+        % endif
+        <fileset dir="${build_lib_dir}" includes="**/*.jar"/>
+    </path>
 
-        <javac destdir="${build_class_dir}" srcdir="${build_temp_dir}">
-            % if lib_dir_exists:
-            <classpath location="${lib_dir}"/>
-            % endif
-        </javac>
+    <target name="dist">
+        <javac destdir="${build_class_dir}" srcdir="${base_dir}"
+               classpathref="classpath"/>
+
+        <javac destdir="${build_class_dir}" srcdir="${build_temp_dir}"
+               classpathref="classpath"/>
 
         <one-jar destfile="${dist_dir}/${dist_name}.jar">
             <main>
