@@ -93,6 +93,10 @@ class LibTracer(object):
 
         try:
             for sys_path in sys.path:
+                # Exclude standard library
+                if sys_path.endswith('/Lib'):
+                    continue
+                # Convert to module path
                 if filename.startswith(sys_path):
                     # Remove system path directory
                     filename = filename.split(sys_path, 1)[1]
@@ -101,10 +105,10 @@ class LibTracer(object):
                     # Replace all seprators with a dot (.)
                     filename = filename.replace(os.path.sep, '.')
                     return filename
+            else:
+                return None
         except IndexError:
-            pass
-
-        raise OSError("Cound't find the module path for %r" % filename)
+            raise OSError("Cound't find the module path for %r" % filename)
 
     def __find_modules_from_directory(self):
         """Finds all Python modules under specified directory.
@@ -153,7 +157,10 @@ class LibTracer(object):
         for attribute_name in dir(module):
             if attribute_name in self.ignored_module_attribute_names:
                 continue
-            attribute = getattr(module, attribute_name)
+            try:
+                attribute = getattr(module, attribute_name)
+            except AttributeError:
+                continue
 
            # Find module path for each attribute
             if isinstance(attribute, types.ModuleType) and \
@@ -172,16 +179,13 @@ class LibTracer(object):
         """Gets Python module object by specified module path."""
         # Import the module by module path
         module = __import__(module_path)
+        if repr(module).startswith("<java package "):
+            raise ImportError
         try:
-            root_module_name, rest_module_path = module_path.split('.', 1)
-        except ValueError:
-            pass
-        else:
-            try:
-                module = getattr(module, rest_module_path)
-            except AttributeError:
-                pass
-
+            for submodule_name in module_path.split('.')[1:]:
+                module = getattr(module, submodule_name)
+        except AttributeError:
+            raise ImportError
         return module
 
     def get_lib_locations(self):
@@ -210,6 +214,9 @@ class LibTracer(object):
 
             # Separate module_filename to system path and the rest
             for sys_path in sys.path:
+                # Exclude standard library
+                if sys_path.endswith('/Lib'):
+                    continue
                 if module_filename.startswith(sys_path):
                     # Convert to compiled file if filename ends with `.py`
                     path_without_ext, ext = os.path.splitext(module_filename)
