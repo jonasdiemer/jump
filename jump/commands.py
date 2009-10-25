@@ -345,7 +345,10 @@ class JumpDistCommand(JumpCommand):
         for sys_path, relative_path in lib_locations:
             src_path = os.path.join(sys_path, relative_path)
             dest_path = os.path.join(self.build_class_dir, relative_path)
-            shutil.copyfile(src_path, dest_path)
+            dest_dirname = os.path.dirname(dest_path)
+            if not os.path.isdir(dest_dirname):
+                os.makedirs(dest_dirname)
+            shutil.copy2(src_path, dest_path)
 
     def copy_default_resources(self):
         """Copies default resources to `build/resource` directory."""
