@@ -223,6 +223,7 @@ class JumpDistCommand(JumpCommand):
     config_filename = os.path.join(base_dir, 'config.jp')
     # .jar files
     jython_jar_filename = os.path.join(jump.lib_dir, 'jython.jar')
+    jythonlib_jar_filename = os.path.join(jump.lib_dir, 'jython-lib.jar')
     onejar_jar_filename = os.path.join(jump.lib_dir,
                                        'one-jar-ant-task-0.96.jar')
     # Templates
@@ -328,10 +329,16 @@ class JumpDistCommand(JumpCommand):
             self.config['main_class'] = 'com.ollix.jump.Main'
 
     def copy_required_jar(self):
-        """Copies required `.jar` files to `build` directory."""
-        # Copy `jython.jar` file to `build/lib` directory if not provided
-        if not os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
+        """Copies required `.jar` files to `build/lib` directory."""
+        # Override default Jython JAR files if provided
+        if os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
+            # The operation will be done in ant
+            self.config['use_default_jython'] = False
+        # Or, use Jython JAR files included in Jump
+        else:
+            self.config['use_default_jython'] = True
             shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
+            shutil.copy2(self.jythonlib_jar_filename, self.build_lib_dir)
 
         # Copy `one-jar.jar` file to `build/temp` directory
         shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
