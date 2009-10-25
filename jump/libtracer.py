@@ -24,6 +24,7 @@ import os
 import sys
 import types
 import copy
+import py_compile
 
 
 class LibTracer(object):
@@ -193,6 +194,12 @@ class LibTracer(object):
             # Separate module_filename to system path and the rest
             for sys_path in sys.path:
                 if module_filename.startswith(sys_path):
+                    # Convert to compiled file if filename ends with `.py`
+                    path_without_ext, ext = os.path.splitext(module_filename)
+                    if ext == '.py':
+                        py_compile.compile(module_filename)
+                        # Rename filename with a `$py.class` extension
+                        module_filename = path_without_ext + '$py.class'
                     prefix = sys_path + os.path.sep
                     module_filename = module_filename.split(prefix, 1)[1]
                     location = (sys_path, module_filename)
