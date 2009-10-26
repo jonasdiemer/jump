@@ -37,6 +37,7 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
     parser.add_option('-m', '--main_entry_point', action="store",
                       default=None, help="main entry point, either Java or " \
                                          "Python")
+    required_options = ['main_entry_point']
 
     def setup_main_entry_point(self, options):
         """Setup main entry point."""
