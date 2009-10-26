@@ -154,6 +154,9 @@ class LibTracer(object):
         else:
             self.module_paths.append(module_path)
 
+        # Make sure `__init__.py` will be included at every higher level
+        self.__find_modules_from_module_path(module_path.rsplit('.', 1)[0])
+
         for attribute_name in dir(module):
             if attribute_name in self.ignored_module_attribute_names:
                 continue
