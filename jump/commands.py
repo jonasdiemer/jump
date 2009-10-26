@@ -60,6 +60,24 @@ class OptionParser(object):
         for args, kw in self.__options:
             parser.add_option(*args, **kw)
 
+class CommandOption(dict):
+    """A wrapper for optparse.parser parsed options
+
+    Adds the dictionary ability to the parsed options.
+    """
+    def __init__(self, options):
+        for option_name in dir(options):
+            if not option_name.startswith('_') and \
+               option_name not in ('ensure_value', 'read_file',
+                                   'read_module'):
+                self[option_name] = getattr(options, option_name)
+
+    def __getattr__(self, key):
+        return self[key]
+
+    def __setattr__(self, key, value):
+        self[key] = value
+
 class Command(object):
     """The base class for commands.
 
@@ -87,10 +105,14 @@ class Command(object):
     Attributes:
         usage: The usage message displayed in help message.
         version: The string to print when supplying --version option.
+        config_filename: A string of used config filename.
+        required_options: A list of required command options.
     """
 
     usage = '%prog [options] arg1 arg2 ...'
     version = None
+    config_filename = None
+    required_options = None
 
     def generate_usage(self):
         """Generates usage messages for parser."""
@@ -104,6 +126,41 @@ class Command(object):
                 usage.append('  %s: %s' % (command.name, command_class.usage))
         return ''.join(usage)
 
+    def adopt_config_parameters(self, args):
+        """Adopts config parameters into command options."""
+        if not self.config_filename or \
+           not os.path.isfile(self.config_filename):
+            return
+
+        config_file = open(self.config_filename, 'r')
+        arg_index = 0
+        for line in config_file:
+            # Ignore from `#` to the end of line
+            line = line.split('#')[0].strip()
+            if not line:
+                continue
+            # Add parameters to `self.config` variable
+            try:
+                key, value = line.split('=')
+            except:
+                raise CommandError("Syntax error in config file.")
+            args.insert(arg_index, '--%s=%s' % (key.strip(), value.strip()))
+            arg_index += 1
+        config_file.close()
+
+    def check_required_options(self, options):
+        """Check required options.
+
+        Raises:
+            CommandError: Raised if required options are not specified.
+        """
+        if not self.required_options:
+            return
+
+        for option_name in self.required_options:
+            if not getattr(options, option_name):
+                raise CommandError("%r parameter is required." % option_name)
+
     def run(self, *args):
         """Executes the command.
 
@@ -116,6 +173,7 @@ class Command(object):
         # Set arguements from command line if not specified in parameters
         if not args:
             args = sys.argv[1:]
+        self.adopt_config_parameters(args)
 
         parser = optparse.OptionParser(usage=self.generate_usage(),
                                        version=self.version)
@@ -146,6 +204,7 @@ class Command(object):
 
         # Parse arguments from command line
         (options, args) = parser.parse_args(list(args))
+        options = CommandOption(options)
         try:
             # Determine the command instance
             command_name = args[0] if args else None
@@ -155,6 +214,8 @@ class Command(object):
                 command_instance = command_class()
             else:
                 command_instance = self
+            # Check required parameters
+            command_instance.check_required_options(options)
             # Execute the command
             command_instance.command(args, options)
         except CommandError, e:
@@ -192,6 +253,8 @@ class JumpCommand(Command):
     subcmd_entry_point = 'jump.commands'
     usage = '%prog command [options] arg1 arg2 ...'
     version = '%prog ' + jump.VERSION
+    config_filename = 'config.jp'
+    required_options = ['main_entry_point']
 
     parser = OptionParser()
     parser.add_option('-v', '--verbose', action="store_true",
@@ -274,50 +337,14 @@ class JumpDistCommand(JumpCommand):
         if not os.path.isdir(self.dist_dir):
             os.mkdir(self.dist_dir)
 
-    def populate_config_parameters(self):
-        """Populates parameters from the config file."""
-        if not os.path.isfile(self.config_filename):
-            return
-
-        config_file = open(self.config_filename, 'r')
-        for line in config_file:
-            # Ignore from `#` to the end of line
-            line = line.split('#')[0].strip()
-            if not line:
-                continue
-            # Add parameters to `self.config` variable
-            try:
-                key, value = line.split('=')
-            except:
-                raise CommandError("Syntax error in config file.")
-            self.config[key.strip()] = value.strip()
-        config_file.close()
-
-    def update_config_with_options(self, options):
-        """Update config parameters with command options."""
-        for option_name in ('dist_name', 'main_entry_point'):
-            option_value = getattr(options, option_name)
-            if option_value:
-                self.config[option_name] = option_value
-
-    def check_required_parameters(self):
-        """Check if required parameters are set."""
-        for name in ('main_entry_point',):
-            if name not in self.config:
-                raise CommandError("%r parameter is required." % name)
-
-        # Set `dist_name` to the name of current directory if not specified
-        if 'dist_name' not in self.config:
-            self.config['dist_name'] = os.path.basename(self.base_dir)
-
-    def setup_main_entry_point(self):
+    def setup_main_entry_point(self, options):
         """Setup main entry point."""
         # Interpret `main_entry_point` parameter
         try:
-            py_module, py_func = self.config['main_entry_point'].split(':')
+            py_module, py_func = options.main_entry_point.split(':')
         except ValueError:
             # Set Java main class
-            self.config['main_class'] = self.config['main_entry_point']
+            options.main_class = options.main_entry_point
         else:
             # Use default Main.java file to trigger Python main entry point
             main_template_vars = {'py_main_module': py_module,
@@ -326,17 +353,17 @@ class JumpDistCommand(JumpCommand):
             main_java = open(self.default_main_java, 'w')
             main_java.write(main_java_tempalte.render(**main_template_vars))
             main_java.close()
-            self.config['main_class'] = 'com.ollix.jump.Main'
+            options.main_class = 'com.ollix.jump.Main'
 
-    def copy_required_jar(self):
+    def copy_required_jar(self, options):
         """Copies required `.jar` files to `build/lib` directory."""
         # Override default Jython JAR files if provided
         if os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
             # The operation will be done in ant
-            self.config['use_default_jython'] = False
+            options.use_default_jython = False
         # Or, use Jython JAR files included in Jump
         else:
-            self.config['use_default_jython'] = True
+            options.use_default_jython = True
             shutil.copy2(self.jython_jar_filename, self.build_lib_dir)
             shutil.copy2(self.jythonlib_jar_filename, self.build_lib_dir)
 
@@ -365,23 +392,24 @@ class JumpDistCommand(JumpCommand):
         license.write(license_tempalte.render())
         license.close()
 
-    def create_build_xml(self):
+    def create_build_xml(self, options):
         """Creates the `build.xml` file for ant in `build/temp`."""
+        if not options.dist_name:
+            options.dist_name = os.path.basename(self.base_dir)
+
+        options.update(self.config)
         build_tempalte = Template(filename=self.build_template)
         build_xml = open(self.build_xml_filename, 'w')
-        build_xml.write(build_tempalte.render(**self.config))
+        build_xml.write(build_tempalte.render(**options))
         build_xml.close()
 
     def command(self, args, options):
         """Executes the command."""
-        self.populate_config_parameters()
-        self.update_config_with_options(options)
-        self.check_required_parameters()
-        self.setup_main_entry_point()
-        self.copy_required_jar()
+        self.setup_main_entry_point(options)
+        self.copy_required_jar(options)
         self.copy_required_libs()
         self.copy_default_resources()
-        self.create_build_xml()
+        self.create_build_xml(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)
 
     def clean(self):
