@@ -43,7 +43,6 @@ class JumpCommand(jump.commands.Command):
     usage = '%prog command [options] arg1 arg2 ...'
     version = '%prog ' + jump.VERSION
     config_filename = 'config.jp'
-    required_options = ['main_entry_point']
 
     # Basic configuration
     base_dir = os.getcwd()
