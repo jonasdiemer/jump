@@ -84,7 +84,7 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
     def command(self, args, options):
         """Executes the command."""
         self.setup_main_entry_point(options)
-        self.copy_jython_jars(options, self.build_lib_dir)
+        self.copy_jython_jars(options)
         self.copy_python_libs(options, self.build_class_dir)
         self.copy_default_resources()
         self.setup_dist_environments(options)

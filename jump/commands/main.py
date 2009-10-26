@@ -21,6 +21,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import sys
 import shutil
 
 import jump
@@ -106,18 +107,29 @@ class JumpCommand(jump.commands.Command):
                 raise jump.commands.CommandError(error_message)
         options.dist_path = os.path.join(options.dist_dir, options.dist_name)
 
-    def copy_jython_jars(self, options, dest_dir):
+    def copy_jython_jars(self, options):
         """Copies required `.jar` files to `build/lib` directory."""
-        # TODO (olliwang): copy from JYTHON_HOME automatically.
-        # Override default Jython JAR files if provided
-        if os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
-            # The operation will be done in ant
-            options.use_default_jython = False
-        # Or, use Jython JAR files included in Jump
+        java_class_paths = sys.registry['java.class.path'].split(':')
+        for path in java_class_paths:
+            jython_dirname, jython_jar_filename = os.path.split(path)
+            if jython_jar_filename != 'jython.jar':
+                continue
+
+            jythonlib_jar_filename = os.path.join(jython_dirname,
+                                                  'jython-lib.jar')
+            if not os.path.isfile(jythonlib_jar_filename):
+                options.jythonlib_not_exist = True
+            else:
+                options.jythonlib_not_exist = False
+
+            options.jython_dirname = jython_dirname
+            options.jythonlib_dirname = os.path.join(jython_dirname, 'Lib')
+            options.jythonlib_jar_filename = jythonlib_jar_filename
+            break
         else:
-            options.use_default_jython = True
-            shutil.copy2(jump.jython_jar_filename, dest_dir)
-            shutil.copy2(jump.jythonlib_jar_filename, dest_dir)
+            error_message = "Jump could not find your `jython.jar`, please " \
+                            "make sure this file is added to your class path."
+            raise jump.commands.CommandError(error_message)
 
     def copy_python_libs(self, options, dest_dir):
         """Copies required Python modules to specified directory."""
