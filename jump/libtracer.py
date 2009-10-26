@@ -63,7 +63,6 @@ class LibTracer(object):
         # Create a list of system paths appending specified directory
         sys.path.insert(0, self.basedir)
 
-        self.module_paths = []
         self.quiet = quiet
 
         if full_packages:
@@ -72,6 +71,8 @@ class LibTracer(object):
             self.full_packages = []
         if module_extensions:
             self.module_extensions = module_extensions
+
+        self.module_paths = self.full_packages[:]
 
     def convert_filename_to_module_path(self, filename):
         """Returns the module path by specified filename.
@@ -156,8 +157,6 @@ class LibTracer(object):
         # Ignore included full packages
         package_name = module_path.split('.', 1)[0]
         if package_name in self.full_packages:
-            if package_name not in self.module_paths:
-                self.module_paths.append(package_name)
             return
 
         try:
@@ -258,5 +257,4 @@ class LibTracer(object):
                     if location not in lib_locations:
                         lib_locations.append(location)
                 break
-
         return lib_locations
