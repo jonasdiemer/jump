@@ -259,6 +259,28 @@ class JumpCommand(Command):
     parser = OptionParser()
     parser.add_option('-v', '--verbose', action="store_true",
                       default=False, help="run in verbose mode")
+    parser.add_option('-p', '--include_packages', action="store",
+                      default=None, help="include full Python packages")
+
+    def copy_python_libs(self, options, dest_dir):
+        """Copies required Python modules to `build/class` directory."""
+        if options.include_packages:
+            full_packages = options.include_packages.split(',')
+        else:
+            full_packages = None
+
+        # Find all required Python modules or packages and copy them
+        # to the specified destnation directory
+        lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False,
+                                              full_packages=full_packages)
+        lib_locations = lib_tracer.get_lib_locations()
+        for sys_path, relative_path in lib_locations:
+            src_path = os.path.join(sys_path, relative_path)
+            dest_path = os.path.join(dest_dir, relative_path)
+            dest_dirname = os.path.dirname(dest_path)
+            if not os.path.isdir(dest_dirname):
+                os.makedirs(dest_dirname)
+            shutil.copy2(src_path, dest_path)
 
     def command(self, args, options):
         """Returns help message."""
@@ -370,20 +392,6 @@ class JumpDistCommand(JumpCommand):
         # Copy `one-jar.jar` file to `build/temp` directory
         shutil.copy2(self.onejar_jar_filename, self.build_temp_dir)
 
-    def copy_required_libs(self):
-        """Copies required Python modules to `build/class` directory."""
-        # Compile Python source code to $py.class file and copy it to
-        # `build/class` directory
-        lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False)
-        lib_locations = lib_tracer.get_lib_locations()
-        for sys_path, relative_path in lib_locations:
-            src_path = os.path.join(sys_path, relative_path)
-            dest_path = os.path.join(self.build_class_dir, relative_path)
-            dest_dirname = os.path.dirname(dest_path)
-            if not os.path.isdir(dest_dirname):
-                os.makedirs(dest_dirname)
-            shutil.copy2(src_path, dest_path)
-
     def copy_default_resources(self):
         """Copies default resources to `build/resource` directory."""
         # Generate default license file
@@ -407,7 +415,7 @@ class JumpDistCommand(JumpCommand):
         """Executes the command."""
         self.setup_main_entry_point(options)
         self.copy_required_jar(options)
-        self.copy_required_libs()
+        self.copy_python_libs(options, self.build_class_dir)
         self.copy_default_resources()
         self.create_build_xml(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

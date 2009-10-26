@@ -34,7 +34,8 @@ class LibTracer(object):
     ignored_module_paths = ['ez_setup', 'setup']
     ignored_module_attribute_names = ['__builtins__', '__doc__', '__name__']
 
-    def __init__(self, basedir, module_extensions=None, quiet=False):
+    def __init__(self, basedir, full_packages=None, module_extensions=None,
+                 quiet=False):
         """Initialize a ModuleTracer instance.
 
         Converts the specified `basedir` to absolute path and adds it to the
@@ -42,6 +43,7 @@ class LibTracer(object):
 
         Args:
             basedir: The directory for searching.
+            full_packages: A list of packages should be included explicitly.
             module_extensions: Accepted module extensions.
             quiet: If True, be quiet during collecting.
 
@@ -64,6 +66,10 @@ class LibTracer(object):
         self.module_paths = []
         self.quiet = quiet
 
+        if full_packages:
+            self.full_packages = full_packages
+        else:
+            self.full_packages = []
         if module_extensions:
             self.module_extensions = module_extensions
 
@@ -147,6 +153,13 @@ class LibTracer(object):
            module_path in self.ignored_module_paths:
             return
 
+        # Ignore included full packages
+        package_name = module_path.split('.', 1)[0]
+        if package_name in self.full_packages:
+            if package_name not in self.module_paths:
+                self.module_paths.append(package_name)
+            return
+
         try:
             module = self.get_module_by_module_path(module_path)
         except ImportError:
@@ -217,20 +230,33 @@ class LibTracer(object):
 
             # Separate module_filename to system path and the rest
             for sys_path in sys.path:
-                # Exclude standard library
-                if sys_path.endswith('/Lib'):
+                if sys_path.endswith('/Lib') or \
+                   not module_filename.startswith(sys_path):
                     continue
-                if module_filename.startswith(sys_path):
+
+                # Find all available filenames
+                filenames = []
+                if module_path in self.full_packages:
+                    package_dir = os.path.dirname(module_filename)
+                    for root, dirnames, basenames in os.walk(package_dir):
+                        for basename in basenames:
+                            filename = os.path.join(root, basename)
+                            filenames.append(filename)
+                else:
+                    filenames.append(module_filename)
+
+                for filename in filenames:
                     # Convert to compiled file if filename ends with `.py`
-                    path_without_ext, ext = os.path.splitext(module_filename)
+                    path_without_ext, ext = os.path.splitext(filename)
                     if ext == '.py':
-                        py_compile.compile(module_filename)
+                        py_compile.compile(filename)
                         # Rename filename with a `$py.class` extension
-                        module_filename = path_without_ext + '$py.class'
+                        filename = path_without_ext + '$py.class'
                     prefix = sys_path + os.path.sep
-                    module_filename = module_filename.split(prefix, 1)[1]
-                    location = (sys_path, module_filename)
+                    filename = filename.split(prefix, 1)[1]
+                    location = (sys_path, filename)
                     if location not in lib_locations:
                         lib_locations.append(location)
-                    break
+                break
+
         return lib_locations
