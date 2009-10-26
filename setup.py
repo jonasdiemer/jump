@@ -32,7 +32,7 @@ import jump
 
 setup(name='jump',
       version=jump.VERSION,
-      description='Distributing Jython Scripts in a Jump!',
+      description='Jump is a build tool for distributing Jython applications.',
       license="GPLv3",
       author='Olli Wang',
       author_email='olliwang@ollix.com',
