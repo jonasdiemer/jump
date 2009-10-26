@@ -22,6 +22,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import pkg_resources
 
+from jump import commands
 from jump import libtracer
 
 

@@ -45,10 +45,10 @@ setup(name='jump',
       entry_points="""
       # -*- Entry points: -*-
       [console_scripts]
-      jump = jump.commands:jump_command
+      jump = jump.commands.main:jump_command
 
       [jump.commands]
-      dist = jump.commands:JumpDistCommand
+      jar = jump.commands.jar:JumpJarCommand
       """,
       classifiers=[
           'Intended Audience :: Developers',
