@@ -120,12 +120,12 @@ class Command(object):
         usage = [self.usage]
         # Add subcommand usages if available
         if hasattr(self, 'subcmd_entry_point'):
-            usage.append("\n\nCommands:\n")
+            usage.append("\nCommands:")
             subcmd_entry_point = self.subcmd_entry_point
             for command in pkg_resources.iter_entry_points(subcmd_entry_point):
                 command_class = command.load()
                 usage.append('  %s: %s' % (command.name, command_class.usage))
-        return ''.join(usage)
+        return '\n'.join(usage)
 
     def adopt_config_parameters(self, args):
         """Adopts config parameters into command options."""

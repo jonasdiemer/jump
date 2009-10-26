@@ -27,7 +27,7 @@
              basedir="${build_temp_dir}/jython/Lib"/>
         % endif
 
-        <one-jar destfile="${dist_dir}/${dist_name}.jar">
+        <one-jar destfile="${dist_path}.jar">
             <main>
                 <fileset dir="${build_class_dir}"/>
             </main>

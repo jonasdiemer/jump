@@ -44,16 +44,83 @@ class JumpCommand(jump.commands.Command):
     config_filename = 'config.jp'
     required_options = ['main_entry_point']
 
+    # Basic configuration
+    base_dir = os.getcwd()
+    lib_dir = os.path.join(base_dir, 'lib')
+    build_dir = os.path.join(base_dir, 'build')
+    build_lib_dir = os.path.join(build_dir, 'lib')
+    build_class_dir = os.path.join(build_dir, 'classes')
+    build_resc_dir = os.path.join(build_dir, 'resources')
+    build_temp_dir = os.path.join(build_dir, 'temp')
+
+    config_filename = os.path.join(base_dir, config_filename)
+    build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
+    default_main_java_filename = os.path.join(build_temp_dir, 'Main.java')
+    license_filename = os.path.join(build_resc_dir, 'LICENSE')
+
+    # Command options
     parser = jump.commands.OptionParser()
     parser.add_option('-v', '--verbose', action="store_true",
                       default=False, help="run in verbose mode")
     parser.add_option('-n', '--dist_name', action="store",
-                      default=None, help="name of the distribution file")
+                      default=os.path.basename(base_dir),
+                      help="name of the distribution file")
     parser.add_option('-p', '--include_packages', action="store",
                       default=None, help="include full Python packages")
+    parser.add_option('-d', '--dist_dir', action="store",
+                      default=os.path.join(base_dir, 'dist'),
+                      help="directory to put the distribution")
+
+    def __init__(self):
+        """Initialize build environments.
+
+        Creates some directories for build, the created directories include:
+            CURRENT_DIRECTORY
+            |-- build           # build-related files
+                |-- lib         # .jar files
+                |-- classes     # Java bytecode class files
+                |-- resources   # static files
+                |-- temp        # temporary files
+        """
+        # Create `build` and nested directories
+        if os.path.isdir(self.build_dir):
+            shutil.rmtree(self.build_dir)
+        os.mkdir(self.build_dir)
+        for dir_name in (self.build_lib_dir, self.build_class_dir,
+                         self.build_resc_dir, self.build_temp_dir):
+            os.mkdir(dir_name)
+
+    def setup_dist_environments(self, options):
+        """Setup distribuiton enviroments"""
+        # Convert dist_dir to absolute path
+        if not os.path.isabs(options.dist_dir):
+            options.dist_dir = os.path.abspath(options.dist_dir)
+
+        if not os.path.isdir(options.dist_dir):
+            try:
+                os.mkdir(options.dist_dir)
+            except OSError:
+                parent_dir = os.path.dirname(options.dist_dir)
+                error_message = "Could not make the `dist_dir` directory " \
+                                "because %r does not exist." % (parent_dir,)
+                raise jump.commands.CommandError(error_message)
+        options.dist_path = os.path.join(options.dist_dir, options.dist_name)
+
+    def copy_jython_jars(self, options, dest_dir):
+        """Copies required `.jar` files to `build/lib` directory."""
+        # TODO (olliwang): copy from JYTHON_HOME automatically.
+        # Override default Jython JAR files if provided
+        if os.path.isfile(os.path.join(self.lib_dir, 'jython.jar')):
+            # The operation will be done in ant
+            options.use_default_jython = False
+        # Or, use Jython JAR files included in Jump
+        else:
+            options.use_default_jython = True
+            shutil.copy2(jump.jython_jar_filename, dest_dir)
+            shutil.copy2(jump.jythonlib_jar_filename, dest_dir)
 
     def copy_python_libs(self, options, dest_dir):
-        """Copies required Python modules to `build/class` directory."""
+        """Copies required Python modules to specified directory."""
         if options.include_packages:
             full_packages = options.include_packages.split(',')
         else:
@@ -75,6 +142,11 @@ class JumpCommand(jump.commands.Command):
     def command(self, args, options):
         """Returns help message."""
         JumpCommand().run('-h')
+
+    def clean(self):
+        """Removes all generated files used for build."""
+        # Remove `build` directory
+        shutil.rmtree(self.build_dir)
 
 def jump_command():
     """Runs the Jump command."""

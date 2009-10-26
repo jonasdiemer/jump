@@ -20,6 +20,8 @@ You should have received a copy of the GNU General Public License along
 with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os
+
 import pkg_resources
 
 from jump import commands
@@ -29,3 +31,13 @@ from jump import libtracer
 VERSION = "0.9.4"
 lib_dir = pkg_resources.resource_filename('jump', 'lib')
 template_dir = pkg_resources.resource_filename('jump', 'templates')
+
+# Resource paths
+jython_jar_filename = os.path.join(lib_dir, 'jython.jar')
+jythonlib_jar_filename = os.path.join(lib_dir, 'jython-lib.jar')
+onejar_jar_filename = os.path.join(lib_dir, 'one-jar-ant-task-0.96.jar')
+
+# Template paths
+build_xml_template = os.path.join(template_dir, 'build.xml.mako')
+main_java_template = os.path.join(template_dir, 'main.java.mako')
+license_template = os.path.join(template_dir, 'license.mako')
