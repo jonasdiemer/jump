@@ -77,7 +77,7 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
                          "build_temp_dir": self.build_temp_dir,
                          "build_resc_dir": self.build_resc_dir}
         options.update(template_vars)
-        build_tempalte = Template(filename=jump.build_xml_template)
+        build_tempalte = Template(filename=jump.jar_build_xml_template)
         build_xml = open(self.build_xml_filename, 'w')
         build_xml.write(build_tempalte.render(**options))
         build_xml.close()

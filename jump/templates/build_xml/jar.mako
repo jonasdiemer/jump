@@ -1,4 +1,4 @@
-<project name="connected_sliders" default="dist">
+<project name="${dist_name}" default="dist">
 
     <taskdef name="one-jar"
              classname="com.simontuffs.onejar.ant.OneJarTask"
@@ -13,15 +13,13 @@
         <fileset dir="${jython_dirname}" includes="*.jar"/>
     </path>
 
-    <target name="jython">
-        % if jythonlib_not_exist:
+    <target name="dist">
+		% if jythonlib_not_exist:
         <jar destfile="${jythonlib_jar_filename}"
              basedir="${jythonlib_dirname}"
              excludes="site-packages/" includes="**/*.py"/>
         % endif
-    </target>
 
-    <target name="dist" depends="jython">
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
                classpathref="classpath"/>
 
