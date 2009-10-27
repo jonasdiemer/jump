@@ -27,8 +27,9 @@ from mako.template import Template
 
 import jump
 
+
 class JumpJarCommand(jump.commands.main.JumpCommand):
-    """Jump dist command.
+    """Jump jar command.
 
     Make a standalone JAR file.
     """
