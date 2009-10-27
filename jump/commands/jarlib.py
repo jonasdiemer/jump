@@ -42,7 +42,9 @@ class JumpJarLibCommand(jump.commands.main.JumpCommand):
         # Template variables
         classpaths = sys.registry['java.class.path'].split(':')
         template_vars = {"classpaths": classpaths,
+                         "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
+                         "lib_dir": self.lib_dir,
                          "build_lib_dir": self.build_lib_dir,
                          "build_class_dir": self.build_class_dir}
         options.update(template_vars)

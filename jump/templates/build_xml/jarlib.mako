@@ -1,9 +1,9 @@
 <project name="${dist_name}" default="dist">
 
     <path id="classpath">
-        % for classpath in classpaths:
-		<pathelement location="${classpath}"/>
-        % endfor
+        % if lib_dir_exists:
+        <fileset dir="${lib_dir}" includes="**/*.jar"/>
+        % endif
     </path>
 
     <target name="dist">
