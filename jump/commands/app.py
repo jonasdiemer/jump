@@ -19,9 +19,6 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import shutil
-
-from mako.template import Template
 
 import jump
 from jump.commands.main import JumpCommand
@@ -36,7 +33,7 @@ class JumpAppCommand(JumpCommand):
     parser = jump.commands.OptionParser()
     required_options = ['main_entry_point']
 
-    def create_build_xml(self, options):
+    def create_template_file(self, options):
         """Creates the `build.xml` file for ant in `build/temp`."""
         # Template variables
         template_vars = {"jarbundler_filename": jump.jarbundler_filename,
@@ -48,8 +45,8 @@ class JumpAppCommand(JumpCommand):
                          "build_temp_dir": self.build_temp_dir,
                          "build_resc_dir": self.build_resc_dir}
         options.update(template_vars)
-        JumpCommand.create_build_xml(self, jump.app_build_xml_template,
-                                     options)
+        JumpCommand.create_template_file(self, jump.app_build_xml_template,
+                                         self.build_xml_filename, options)
 
     def command(self, args, options):
         """Executes the command."""
@@ -57,5 +54,5 @@ class JumpAppCommand(JumpCommand):
         self.copy_jython_jars(options)
         self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
-        self.create_build_xml(options)
+        self.create_template_file(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

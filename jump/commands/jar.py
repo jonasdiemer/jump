@@ -21,15 +21,12 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import shutil
-
-from mako.template import Template
 
 import jump
 from jump.commands.main import JumpCommand
 
 
-class JumpJarCommand(jump.commands.main.JumpCommand):
+class JumpJarCommand(JumpCommand):
     """Jump jar command.
 
     Make a standalone JAR file.
@@ -41,12 +38,10 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
     def copy_default_resources(self):
         """Copies default resources to `build/resource` directory."""
         # Generate default license file
-        license_tempalte = Template(filename=jump.license_template)
-        license_file = open(self.license_filename, 'w')
-        license_file.write(license_tempalte.render())
-        license_file.close()
+        JumpCommand.create_template_file(self, jump.license_template,
+                                         self.license_filename)
 
-    def create_build_xml(self, options):
+    def create_template_file(self, options):
         """Creates the `build.xml` file for ant in `build/temp`."""
         # Template variables
         template_vars = {"onejar_jar_filename": jump.onejar_jar_filename,
@@ -58,8 +53,8 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
                          "build_temp_dir": self.build_temp_dir,
                          "build_resc_dir": self.build_resc_dir}
         options.update(template_vars)
-        JumpCommand.create_build_xml(self, jump.jar_build_xml_template,
-                                     options)
+        JumpCommand.create_template_file(self, jump.jar_build_xml_template,
+                                         self.build_xml_filename, options)
 
     def command(self, args, options):
         """Executes the command."""
@@ -68,5 +63,5 @@ class JumpJarCommand(jump.commands.main.JumpCommand):
         self.copy_python_libs(options, self.build_class_dir)
         self.copy_default_resources()
         self.setup_dist_environments(options)
-        self.create_build_xml(options)
+        self.create_template_file(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

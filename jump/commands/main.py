@@ -22,6 +22,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import types
 import shutil
 
 from mako.template import Template
@@ -57,6 +58,7 @@ class JumpCommand(jump.commands.Command):
 
     config_filename = os.path.join(base_dir, config_filename)
     build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
+    war_web_xml_filename = os.path.join(build_temp_dir, 'web.xml')
     default_main_java_filename = os.path.join(build_temp_dir, 'Main.java')
     license_filename = os.path.join(build_resc_dir, 'LICENSE')
 
@@ -176,12 +178,14 @@ class JumpCommand(jump.commands.Command):
                 os.makedirs(dest_dirname)
             shutil.copy2(src_path, dest_path)
 
-    def create_build_xml(self, template_filename, template_vars):
-        """Creates the `build.xml` file for ant in `build/temp`."""
-        build_tempalte = Template(filename=template_filename)
-        build_xml = open(self.build_xml_filename, 'w')
-        build_xml.write(build_tempalte.render(**template_vars))
-        build_xml.close()
+    def create_template_file(self, src, dest, template_vars=None):
+        """Creates template files for ant in `build/temp`."""
+        if not template_vars:
+            template_vars = {}
+        build_tempalte = Template(filename=src)
+        dest_file = open(dest, 'w')
+        dest_file.write(build_tempalte.render(**template_vars))
+        dest_file.close()
 
     def command(self, args, options):
         """Returns help message."""
