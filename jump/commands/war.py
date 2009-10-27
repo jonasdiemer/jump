@@ -25,11 +25,11 @@ from jump.commands.main import JumpCommand
 
 
 class JumpWarCommand(JumpCommand):
-    """Jump jar command.
+    """Jump war command.
 
-    Make a Mac app bundle.
+    Make a War file for Python WSGI applications.
     """
-    usage = "make a Mac app bundle"
+    usage = "make a War file for Python WSGI applications"
     parser = jump.commands.OptionParser()
     parser.add_option('-w', '--wsgi_handler', action="store",
                       default='application.handler',
