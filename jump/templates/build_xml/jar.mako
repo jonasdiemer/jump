@@ -42,7 +42,7 @@
                            value="com.simontuffs.onejar.Boot"/>
                 <attribute name="One-Jar-Main-Class"
                            value="${main_class}"/>
-                <attribute name="Built-By" value="Jump"/>
+                <attribute name="Built-By" value="${jump_version}"/>
             </manifest>
             <fileset dir="${build_resc_dir}">
                 <include name="**"/>

@@ -12,7 +12,7 @@
 
 		<jar destfile="${dist_path}.jar" basedir="${build_class_dir}">
 			<manifest>
-                <attribute name="Built-By" value="Jump"/>
+                <attribute name="Built-By" value="${jump_version}"/>
             </manifest>
 		</jar>
     </target>

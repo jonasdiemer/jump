@@ -106,6 +106,9 @@ class JumpCommand(jump.commands.Command):
                 raise jump.commands.CommandError(error_message)
         options.dist_path = os.path.join(options.dist_dir, options.dist_name)
 
+        # Jump notice used in distriubtion
+        options.jump_version = "Jump %s" % jump.VERSION
+
     def copy_jython_jars(self, options):
         """Copies required `.jar` files to `build/lib` directory."""
         java_class_paths = sys.registry['java.class.path'].split(':')
