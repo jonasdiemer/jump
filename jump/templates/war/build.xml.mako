@@ -27,7 +27,7 @@
             </manifest>
         </jar>
 
-        <war destfile="${dist_path}.war" webxml="${war_web_xml_filename}">
+        <war destfile="${dist_path}.war" webxml="${web_xml_filename}">
             % if lib_dir_exists:
 		    <lib dir="${lib_dir}">
 		        <include name="**/*.jar"/>
@@ -41,7 +41,7 @@
 		    </lib>
 		    % if google_app_engine:
             <webinf dir="${build_temp_dir}">
-                <include name="appengine-web.xml"/>
+                <include name="${appengine_xml_filename}"/>
             </webinf>
             % endif
         </war>

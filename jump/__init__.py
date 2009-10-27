@@ -29,20 +29,7 @@ from jump import libtracer
 
 
 VERSION = "0.9.5"
+
+# Directory paths
 lib_dir = pkg_resources.resource_filename('jump', 'lib')
 template_dir = pkg_resources.resource_filename('jump', 'templates')
-build_xml_dir = pkg_resources.resource_filename('jump', 'templates/build_xml')
-
-# Resource paths
-onejar_jar_filename = os.path.join(lib_dir, 'one-jar-ant-task-0.96.jar')
-jarbundler_filename = os.path.join(lib_dir, 'jarbundler-2.1.0.jar')
-
-# Template paths
-main_java_template = os.path.join(template_dir, 'main.java.mako')
-license_template = os.path.join(template_dir, 'license.mako')
-jar_build_xml_template = os.path.join(build_xml_dir, 'jar.mako')
-jarlib_build_xml_template = os.path.join(build_xml_dir, 'jarlib.mako')
-app_build_xml_template = os.path.join(build_xml_dir, 'app.mako')
-war_build_xml_template = os.path.join(build_xml_dir, 'war.mako')
-war_web_xml_template = os.path.join(template_dir, 'web.xml.mako')
-appengine_xml_template = os.path.join(template_dir, 'appengine-web.xml.mako')

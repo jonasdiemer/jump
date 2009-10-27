@@ -35,8 +35,11 @@ class JumpJarLibCommand(JumpCommand):
     usage = "make a JAR library file"
     parser = jump.commands.OptionParser()
 
-    def create_template_file(self, options):
-        """Creates the `build.xml` file for ant in `build/temp`."""
+    # Basic configuration
+    template_dir = os.path.join(jump.template_dir, 'jarlib')
+
+    def create_template_files(self, options):
+        """Creates template files for ant in `build/temp`."""
         # Template variables
         classpaths = sys.registry['java.class.path'].split(':')
         template_vars = {"classpaths": classpaths,
@@ -46,12 +49,14 @@ class JumpJarLibCommand(JumpCommand):
                          "build_lib_dir": self.build_lib_dir,
                          "build_class_dir": self.build_class_dir}
         options.update(template_vars)
-        JumpCommand.create_template_file(self, jump.jarlib_build_xml_template,
+        # build.xml
+        build_xml_template = os.path.join(self.template_dir, 'build.xml.mako')
+        JumpCommand.create_template_file(self, build_xml_template,
                                          self.build_xml_filename, options)
 
     def command(self, args, options):
         """Executes the command."""
         self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
-        self.create_template_file(options)
+        self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

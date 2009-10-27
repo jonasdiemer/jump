@@ -35,16 +35,24 @@ class JumpJarCommand(JumpCommand):
     parser = jump.commands.OptionParser()
     required_options = ['main_entry_point']
 
+    # Basic configuration
+    onejar_jar_filename = os.path.join(jump.lib_dir,
+                                       'one-jar-ant-task-0.96.jar')
+    template_dir = os.path.join(jump.template_dir, 'jar')
+
     def copy_default_resources(self):
         """Copies default resources to `build/resource` directory."""
         # Generate default license file
-        JumpCommand.create_template_file(self, jump.license_template,
-                                         self.license_filename)
+        license_template = os.path.join(jump.template_dir, 'resources',
+                                        'license.mako')
+        license_filename = os.path.join(self.build_resc_dir, 'LICENSE')
+        JumpCommand.create_template_file(self, license_template,
+                                         license_filename)
 
-    def create_template_file(self, options):
-        """Creates the `build.xml` file for ant in `build/temp`."""
+    def create_template_files(self, options):
+        """Creates template files for ant in `build/temp`."""
         # Template variables
-        template_vars = {"onejar_jar_filename": jump.onejar_jar_filename,
+        template_vars = {"onejar_jar_filename": self.onejar_jar_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -53,7 +61,9 @@ class JumpJarCommand(JumpCommand):
                          "build_temp_dir": self.build_temp_dir,
                          "build_resc_dir": self.build_resc_dir}
         options.update(template_vars)
-        JumpCommand.create_template_file(self, jump.jar_build_xml_template,
+        # build.xml
+        build_xml_template = os.path.join(self.template_dir, 'build.xml.mako')
+        JumpCommand.create_template_file(self, build_xml_template,
                                          self.build_xml_filename, options)
 
     def command(self, args, options):
@@ -63,5 +73,5 @@ class JumpJarCommand(JumpCommand):
         self.copy_python_libs(options, self.build_class_dir)
         self.copy_default_resources()
         self.setup_dist_environments(options)
-        self.create_template_file(options)
+        self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

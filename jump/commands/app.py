@@ -33,10 +33,14 @@ class JumpAppCommand(JumpCommand):
     parser = jump.commands.OptionParser()
     required_options = ['main_entry_point']
 
-    def create_template_file(self, options):
-        """Creates the `build.xml` file for ant in `build/temp`."""
+    # Basic configuration
+    jarbundler_filename = os.path.join(jump.lib_dir, 'jarbundler-2.1.0.jar')
+    template_dir = os.path.join(jump.template_dir, 'app')
+
+    def create_template_files(self, options):
+        """Creates template files for ant in `build/temp`."""
         # Template variables
-        template_vars = {"jarbundler_filename": jump.jarbundler_filename,
+        template_vars = {"jarbundler_filename": self.jarbundler_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -45,7 +49,9 @@ class JumpAppCommand(JumpCommand):
                          "build_temp_dir": self.build_temp_dir,
                          "build_resc_dir": self.build_resc_dir}
         options.update(template_vars)
-        JumpCommand.create_template_file(self, jump.app_build_xml_template,
+        # build.xml
+        build_xml_template = os.path.join(self.template_dir, 'build.xml.mako')
+        JumpCommand.create_template_file(self, build_xml_template,
                                          self.build_xml_filename, options)
 
     def command(self, args, options):
@@ -54,5 +60,5 @@ class JumpAppCommand(JumpCommand):
         self.copy_jython_jars(options)
         self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
-        self.create_template_file(options)
+        self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

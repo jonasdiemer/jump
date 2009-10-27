@@ -58,9 +58,6 @@ class JumpCommand(jump.commands.Command):
 
     config_filename = os.path.join(base_dir, config_filename)
     build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
-    war_web_xml_filename = os.path.join(build_temp_dir, 'web.xml')
-    default_main_java_filename = os.path.join(build_temp_dir, 'Main.java')
-    license_filename = os.path.join(build_resc_dir, 'LICENSE')
 
     # Command options
     parser = jump.commands.OptionParser()
@@ -105,15 +102,15 @@ class JumpCommand(jump.commands.Command):
         except ValueError:
             # Set Java main class
             options.main_class = options.main_entry_point
-        else:
-            # Use default Main.java file to trigger Python main entry point
-            template_vars = {'py_main_module': py_module,
-                             'py_main_func': py_func}
-            main_java_tempalte = Template(filename=jump.main_java_template)
-            main_java_file = open(self.default_main_java_filename, 'w')
-            main_java_file.write(main_java_tempalte.render(**template_vars))
-            main_java_file.close()
-            options.main_class = 'com.ollix.jump.Main'
+
+        # Use default Main.java file to trigger Python main entry point
+        template_vars = {'py_main_module': py_module, 'py_main_func': py_func}
+        main_java_template = os.path.join(jump.template_dir, 'java',
+                                          'main.java.mako')
+        main_java_filename = os.path.join(self.build_temp_dir, 'Main.java')
+        self.create_template_file(main_java_template, main_java_filename,
+                                  template_vars)
+        options.main_class = 'com.ollix.jump.Main'
 
     def setup_dist_environments(self, options):
         """Setup distribuiton enviroments"""

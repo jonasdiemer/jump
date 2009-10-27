@@ -46,14 +46,15 @@ class JumpWarCommand(JumpCommand):
     required_options = ['wsgi_handler']
 
     # Basic configuration
-    appengine_xml_filename = os.path.join(JumpCommand.build_temp_dir,
-                                          'appengine-web.xml')
+    template_dir = os.path.join(jump.template_dir, 'war')
 
-    def create_template_file(self, options):
-        """Creates the `build.xml` file for ant in `build/temp`."""
+    def create_template_files(self, options):
+        """Creates template files for ant in `build/temp`."""
         # Template variables
-        template_vars = {"war_web_xml_filename": self.war_web_xml_filename,
-                         "appengine_xml_filename": self.appengine_xml_filename,
+        web_xml_filename = os.path.join(JumpCommand.build_temp_dir, 'web.xml')
+        appengine_xml_filename = 'appengine-web.xml'
+        template_vars = {"web_xml_filename": web_xml_filename,
+                         "appengine_xml_filename": appengine_xml_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -61,11 +62,15 @@ class JumpWarCommand(JumpCommand):
                          "build_class_dir": self.build_class_dir,
                          "build_temp_dir": self.build_temp_dir}
         options.update(template_vars)
-        JumpCommand.create_template_file(self, jump.war_build_xml_template,
+        # build.xml
+        build_xml_template = os.path.join(self.template_dir, 'build.xml.mako')
+        JumpCommand.create_template_file(self, build_xml_template,
                                          self.build_xml_filename, options)
-        JumpCommand.create_template_file(self, jump.war_web_xml_template,
-                                         self.war_web_xml_filename, options)
-
+        # web.xml
+        web_xml_template = os.path.join(self.template_dir, 'web.xml.mako')
+        JumpCommand.create_template_file(self, web_xml_template,
+                                         web_xml_filename, options)
+        # appengine-web.xml
         if options.google_app_engine:
             try:
                 gae_id, gae_version = options.google_app_engine.split(':')
@@ -73,17 +78,19 @@ class JumpWarCommand(JumpCommand):
                 error_message = "`google_app_engine` parameter is not set " \
                                 "properly."
                 raise jump.commands.CommandError(error_message)
-            else:
-                options.gae_id, options.gae_version = gae_id, gae_version
-                JumpCommand.create_template_file(self,
-                                                 jump.appengine_xml_template,
-                                                 self.appengine_xml_filename,
-                                                 options)
+
+            options.gae_id, options.gae_version = gae_id, gae_version
+            appengine_xml_template = os.path.join(self.template_dir,
+                                                  'appengine-web.xml.mako')
+            appengine_xml_filename = os.path.join(JumpCommand.build_temp_dir,
+                                                  appengine_xml_filename)
+            JumpCommand.create_template_file(self, appengine_xml_template,
+                                             appengine_xml_filename, options)
 
     def command(self, args, options):
         """Executes the command."""
         self.copy_jython_jars(options)
         self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
-        self.create_template_file(options)
+        self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)
