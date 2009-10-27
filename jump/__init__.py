@@ -28,7 +28,7 @@ from jump import commands
 from jump import libtracer
 
 
-VERSION = "0.9.4"
+VERSION = "0.9.5"
 lib_dir = pkg_resources.resource_filename('jump', 'lib')
 template_dir = pkg_resources.resource_filename('jump', 'templates')
 build_xml_dir = pkg_resources.resource_filename('jump', 'templates/build_xml')
