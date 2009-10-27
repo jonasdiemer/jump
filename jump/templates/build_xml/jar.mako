@@ -32,7 +32,7 @@
             </main>
             <lib>
                 % if lib_dir_exists:
-                <fileset dir="${lib_dir}" excludes="jython.jar"/>
+                <fileset dir="${lib_dir}"/>
                 % endif
                 <fileset dir="${build_lib_dir}"/>
                 <fileset dir="${jython_dirname}" includes="*.jar"/>

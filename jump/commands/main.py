@@ -24,6 +24,8 @@ import os
 import sys
 import shutil
 
+from mako.template import Template
+
 import jump
 
 
@@ -70,6 +72,9 @@ class JumpCommand(jump.commands.Command):
     parser.add_option('-d', '--dist_dir', action="store",
                       default=os.path.join(base_dir, 'dist'),
                       help="directory to put the distribution")
+    parser.add_option('-m', '--main_entry_point', action="store",
+                      default=None, help="main entry point, either Java or " \
+                                         "Python")
 
     def __init__(self):
         """Initialize build environments.
@@ -89,6 +94,24 @@ class JumpCommand(jump.commands.Command):
         for dir_name in (self.build_lib_dir, self.build_class_dir,
                          self.build_resc_dir, self.build_temp_dir):
             os.mkdir(dir_name)
+
+    def setup_main_entry_point(self, options):
+        """Setup main entry point."""
+        # Interpret `main_entry_point` parameter
+        try:
+            py_module, py_func = options.main_entry_point.split(':')
+        except ValueError:
+            # Set Java main class
+            options.main_class = options.main_entry_point
+        else:
+            # Use default Main.java file to trigger Python main entry point
+            template_vars = {'py_main_module': py_module,
+                             'py_main_func': py_func}
+            main_java_tempalte = Template(filename=jump.main_java_template)
+            main_java_file = open(self.default_main_java_filename, 'w')
+            main_java_file.write(main_java_tempalte.render(**template_vars))
+            main_java_file.close()
+            options.main_class = 'com.ollix.jump.Main'
 
     def setup_dist_environments(self, options):
         """Setup distribuiton enviroments"""
@@ -152,6 +175,13 @@ class JumpCommand(jump.commands.Command):
             if not os.path.isdir(dest_dirname):
                 os.makedirs(dest_dirname)
             shutil.copy2(src_path, dest_path)
+
+    def create_build_xml(self, template_filename, template_vars):
+        """Creates the `build.xml` file for ant in `build/temp`."""
+        build_tempalte = Template(filename=template_filename)
+        build_xml = open(self.build_xml_filename, 'w')
+        build_xml.write(build_tempalte.render(**template_vars))
+        build_xml.close()
 
     def command(self, args, options):
         """Returns help message."""

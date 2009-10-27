@@ -34,12 +34,12 @@ template_dir = pkg_resources.resource_filename('jump', 'templates')
 build_xml_dir = pkg_resources.resource_filename('jump', 'templates/build_xml')
 
 # Resource paths
-jython_jar_filename = os.path.join(lib_dir, 'jython.jar')
-jythonlib_jar_filename = os.path.join(lib_dir, 'jython-lib.jar')
 onejar_jar_filename = os.path.join(lib_dir, 'one-jar-ant-task-0.96.jar')
+jarbundler_filename = os.path.join(lib_dir, 'jarbundler-2.1.0.jar')
 
 # Template paths
 main_java_template = os.path.join(template_dir, 'main.java.mako')
 license_template = os.path.join(template_dir, 'license.mako')
 jar_build_xml_template = os.path.join(build_xml_dir, 'jar.mako')
 jarlib_build_xml_template = os.path.join(build_xml_dir, 'jarlib.mako')
+app_build_xml_template = os.path.join(build_xml_dir, 'app.mako')
