@@ -49,6 +49,7 @@ setup(name='jump',
 
       [jump.commands]
       jar = jump.commands.jar:JumpJarCommand
+      jarlib = jump.commands.jarlib:JumpJarLibCommand
       """,
       classifiers=[
           'Intended Audience :: Developers',
