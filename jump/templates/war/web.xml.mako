@@ -12,6 +12,10 @@
             <param-value>${wsgi_handler}</param-value>
         </init-param>
         <init-param>
+            <param-name>multithread</param-name>
+            <param-value>${0 if no_multithread else 1}</param-value>
+        </init-param>
+        <init-param>
             <param-name>cache_callables</param-name>
             <param-value>${1 if cache_callables else 0}</param-value>
         </init-param>

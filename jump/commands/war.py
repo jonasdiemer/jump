@@ -42,7 +42,10 @@ class JumpWarCommand(JumpCommand):
                                            "any callables it creates")
     parser.add_option('-g', '--google_app_engine', action="store",
                       default=None,  help="should set in the form of " \
-                                           "`ID:VERSION`")
+                                          "`ID:VERSION`")
+    parser.add_option('-t', '--no_multithread', action="store_true",
+                      default=False,  help="whether to run in multithread " \
+                                          "mode")
     required_options = ['wsgi_handler']
 
     # Basic configuration
@@ -51,6 +54,17 @@ class JumpWarCommand(JumpCommand):
     def create_template_files(self, options):
         """Creates template files for ant in `build/temp`."""
         # Template variables
+        if options.google_app_engine:
+            try:
+                gae_id, gae_version = options.google_app_engine.split(':')
+            except ValueError:
+                error_message = "`google_app_engine` parameter is not set " \
+                                "properly."
+                raise jump.commands.CommandError(error_message)
+            else:
+                options.gae_id, options.gae_version = gae_id, gae_version
+                options.no_multithread = True
+
         web_xml_filename = os.path.join(JumpCommand.build_temp_dir, 'web.xml')
         appengine_xml_filename = 'appengine-web.xml'
         template_vars = {"web_xml_filename": web_xml_filename,
@@ -72,14 +86,6 @@ class JumpWarCommand(JumpCommand):
                                          web_xml_filename, options)
         # appengine-web.xml
         if options.google_app_engine:
-            try:
-                gae_id, gae_version = options.google_app_engine.split(':')
-            except ValueError:
-                error_message = "`google_app_engine` parameter is not set " \
-                                "properly."
-                raise jump.commands.CommandError(error_message)
-
-            options.gae_id, options.gae_version = gae_id, gae_version
             appengine_xml_template = os.path.join(self.template_dir,
                                                   'appengine-web.xml.mako')
             appengine_xml_filename = os.path.join(JumpCommand.build_temp_dir,
