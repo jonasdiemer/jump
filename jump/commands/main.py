@@ -132,28 +132,30 @@ class JumpCommand(jump.commands.Command):
         options.jump_version = "Jump %s" % jump.VERSION
 
     def copy_jython_jars(self, options):
-        """Copies required `.jar` files to `build/lib` directory."""
-        java_class_paths = sys.registry['java.class.path'].split(':')
-        for path in java_class_paths:
-            jython_dirname, jython_jar_filename = os.path.split(path)
-            if jython_jar_filename != 'jython.jar':
-                continue
+        """Find and build required Jython JAR files.
 
-            jythonlib_jar_filename = os.path.join(jython_dirname,
-                                                  'jython-lib.jar')
-            if not os.path.isfile(jythonlib_jar_filename):
-                options.jythonlib_not_exist = True
-            else:
-                options.jythonlib_not_exist = False
-
-            options.jython_dirname = jython_dirname
-            options.jythonlib_dirname = os.path.join(jython_dirname, 'Lib')
-            options.jythonlib_jar_filename = jythonlib_jar_filename
-            break
-        else:
+        Real build work would be done by Ant.
+        """
+        try:
+            import org.python
+        except ImportError:
             error_message = "Jump could not find your `jython.jar`, please " \
                             "make sure this file is added to your class path."
             raise jump.commands.CommandError(error_message)
+
+        options.jython_dirname = sys.prefix
+        options.jythonlib_dirname = os.path.join(sys.prefix, 'Lib')
+        if not os.path.isdir(options.jythonlib_dirname):
+            error_message = "Jump could not find your Jython's standard " \
+                            "library at %r" % options.jythonlib_dirname
+            raise jump.commands.CommandError(error_message)
+
+        options.jythonlib_jar_filename = os.path.join(sys.prefix,
+                                                      'jython-lib.jar')
+        if not os.path.isfile(options.jythonlib_jar_filename):
+            options.jythonlib_not_exist = True
+        else:
+            options.jythonlib_not_exist = False
 
     def copy_python_libs(self, options, dest_dir):
         """Copies required Python modules to specified directory."""
