@@ -25,7 +25,7 @@ import sys
 import types
 import copy
 import py_compile
-
+import java
 
 class LibTracer(object):
     """Traces all required Python modules from a certain directory."""
@@ -163,6 +163,9 @@ class LibTracer(object):
             module = self.get_module_by_module_path(module_path)
         except ImportError:
             return
+        except java.lang.ExceptionInInitializerError:
+            raise ImportError("You can only import Java at module level: " \
+                              "%r" % module_path)
         else:
             self.module_paths.append(module_path)
 

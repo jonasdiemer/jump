@@ -168,7 +168,10 @@ class JumpCommand(jump.commands.Command):
         # to the specified destnation directory
         lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False,
                                               full_packages=full_packages)
-        lib_locations = lib_tracer.get_lib_locations()
+        try:
+            lib_locations = lib_tracer.get_lib_locations()
+        except ImportError, e:
+            raise jump.commands.CommandError(e.message)
         for sys_path, relative_path in lib_locations:
             src_path = os.path.join(sys_path, relative_path)
             dest_path = os.path.join(dest_dir, relative_path)
