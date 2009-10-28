@@ -102,6 +102,7 @@ class JumpCommand(jump.commands.Command):
         except ValueError:
             # Set Java main class
             options.main_class = options.main_entry_point
+            return
 
         # Use default Main.java file to trigger Python main entry point
         template_vars = {'py_main_module': py_module, 'py_main_func': py_func}
