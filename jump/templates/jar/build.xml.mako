@@ -37,6 +37,11 @@
                 <fileset dir="${build_lib_dir}"/>
                 <fileset dir="${jython_dirname}" includes="*.jar"/>
             </lib>
+            <binlib>
+                % if binlib_dir_exists:
+                <fileset dir="${binlib_dir}"/>
+                % endif
+            </binlib>
             <manifest>
                 <attribute name="Main-Class"
                            value="com.simontuffs.onejar.Boot"/>

@@ -54,8 +54,10 @@ class JumpJarCommand(JumpCommand):
         # Template variables
         template_vars = {"onejar_jar_filename": self.onejar_jar_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
+                         "binlib_dir_exists": os.path.isdir(self.binlib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
+                         "binlib_dir": self.binlib_dir,
                          "build_lib_dir": self.build_lib_dir,
                          "build_class_dir": self.build_class_dir,
                          "build_temp_dir": self.build_temp_dir,

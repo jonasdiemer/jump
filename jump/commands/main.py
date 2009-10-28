@@ -50,6 +50,7 @@ class JumpCommand(jump.commands.Command):
     # Basic configuration
     base_dir = os.getcwd()
     lib_dir = os.path.join(base_dir, 'lib')
+    binlib_dir = os.path.join(base_dir, 'binlib')
     build_dir = os.path.join(base_dir, 'build')
     build_lib_dir = os.path.join(build_dir, 'lib')
     build_class_dir = os.path.join(build_dir, 'classes')
