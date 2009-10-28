@@ -33,7 +33,14 @@
         </jar>
 
 		<jarbundler dir="${dist_dir}" name="${dist_name}"
-		            mainclass="${main_class}">
+		            mainclass="${main_class}"
+		            ${'icon="%s"' % icon if icon else ""}
+		            ${'shortname="%s"' % short_name if short_name else ""}
+		            arguments="${vm_arguments}" vmoptions="${vm_options}"
+		            developmentregion="${development_region}"
+		            infostring="${info_string}" jvmversion="${jvm_version}"
+		            signature="${signature}"
+		            startOnMainThread="${start_on_main_thread}">
 
 		    % if lib_dir_exists:
 		    <jarfileset dir="${lib_dir}">
