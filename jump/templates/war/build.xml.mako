@@ -44,6 +44,9 @@
                 <include name="${appengine_xml_filename}"/>
             </webinf>
             % endif
+            <manifest>
+                <attribute name="Built-By" value="${jump_version}"/>
+            </manifest>
         </war>
     </target>
 
