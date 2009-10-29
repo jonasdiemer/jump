@@ -105,12 +105,14 @@ class Command(object):
 
     Attributes:
         usage: The usage message displayed in help message.
+        description: description displayed in the help message.
         version: The string to print when supplying --version option.
         config_filename: A string of used config filename.
         required_options: A list of required command options.
     """
 
     usage = '%prog [options] arg1 arg2 ...'
+    description = None
     version = None
     config_filename = None
     required_options = None
@@ -118,6 +120,9 @@ class Command(object):
     def generate_usage(self):
         """Generates usage messages for parser."""
         usage = [self.usage]
+        # Add description
+        if self.description:
+            usage.append('\n' + self.description)
         # Add subcommand usages if available
         if hasattr(self, 'subcmd_entry_point'):
             usage.append("\nCommands:")

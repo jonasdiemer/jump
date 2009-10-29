@@ -44,6 +44,8 @@ class JumpCommand(jump.commands.Command):
     """
     subcmd_entry_point = 'jump.commands'
     usage = '%prog command [options] arg1 arg2 ...'
+    description = """Jump is a build tool for distributing Jython applications.
+You can find more about Jump at http://gitorious.org/jump."""
     version = '%prog ' + jump.VERSION
     config_filename = 'config.jp'
 
