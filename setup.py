@@ -50,6 +50,7 @@ setup(name='jump',
       [jump.commands]
       jar = jump.commands.jar:JumpJarCommand
       jarlib = jump.commands.jarlib:JumpJarLibCommand
+      exe = jump.commands.exe:JumpExeCommand
       app = jump.commands.app:JumpAppCommand
       war = jump.commands.war:JumpWarCommand
       """,

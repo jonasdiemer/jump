@@ -37,7 +37,7 @@ class JumpAppCommand(JumpCommand):
     parser.add_option('--development_region', action="store",
                       default="English", help="the development region of " \
                                               "the bundle")
-    parser.add_option('--icon', action="store", default=None,
+    parser.add_option('--icns', action="store", default=None,
                       help="file reference to a Mac OS X icon file")
     parser.add_option('--info_string', action="store", default="",
                       help="a string for display in the Finder's Get Info " \
@@ -60,8 +60,8 @@ class JumpAppCommand(JumpCommand):
     def create_template_files(self, options):
         """Creates template files for ant in `build/temp`."""
         # Template variables
-        if options.icon:
-            options.icon = os.path.abspath(options.icon)
+        if options.icns:
+            options.icns = os.path.abspath(options.icns)
         if options.vm_options:
             if '-XstartOnFirstThread' in options.vm_options.split(" "):
                 options.start_on_main_thread = 'true'

@@ -34,7 +34,7 @@
 
 		<jarbundler dir="${dist_dir}" name="${dist_name}"
 		            mainclass="${main_class}"
-		            ${'icon="%s"' % icon if icon else ""}
+		            ${'icon="%s"' % icns if icns else ""}
 		            ${'shortname="%s"' % short_name if short_name else ""}
 		            arguments="${vm_arguments}" vmoptions="${vm_options}"
 		            developmentregion="${development_region}"
