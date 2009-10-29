@@ -43,6 +43,7 @@ class JumpExeCommand(JumpCommand):
     xstream_filename = os.path.join(launch4j_dir, 'xstream.jar')
     launch4j_xml_filename = os.path.join(JumpCommand.build_temp_dir,
                                          'launch4j.xml')
+    required_options = ['main_entry_point']
 
     def create_template_files(self, options):
         """Creates template files for ant in `build/temp`."""
