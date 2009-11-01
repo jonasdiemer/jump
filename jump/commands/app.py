@@ -62,11 +62,11 @@ class JumpAppCommand(JumpCommand):
         # Template variables
         if options.icns:
             options.icns = os.path.abspath(options.icns)
-        if options.vm_options:
-            if '-XstartOnFirstThread' in options.vm_options.split(" "):
+
+        options.start_on_main_thread = 'false'
+        if options.vm_options and \
+           '-XstartOnFirstThread' in options.vm_options.split(" "):
                 options.start_on_main_thread = 'true'
-            else:
-                options.start_on_main_thread = 'false'
 
         template_vars = {"jarbundler_filename": self.jarbundler_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
