@@ -195,7 +195,8 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     def command(self, args, options):
         """Returns help message."""
-        JumpCommand().run('-h')
+        jump = JumpCommand()
+        jump('-h')
 
     def clean(self):
         """Removes all generated files used for build."""
