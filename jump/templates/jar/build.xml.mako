@@ -56,6 +56,11 @@
             <fileset dir="${build_resc_dir}">
                 <include name="**"/>
             </fileset>
+            <fileset dir="${base_dir}">
+                % for command, pattern in manifest_patterns:
+                <${command} name="${pattern}"/>
+                % endfor
+            </fileset>
         </one-jar>
     </target>
 

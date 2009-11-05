@@ -47,7 +47,6 @@ class JumpCommand(jump.commands.Command):
     description = """Jump is a build tool for distributing Jython applications.
 You can find more about Jump at http://gitorious.org/jump."""
     version = '%prog ' + jump.VERSION
-    config_filename = 'config.jp'
 
     # Basic configuration
     base_dir = os.getcwd()
@@ -59,7 +58,8 @@ You can find more about Jump at http://gitorious.org/jump."""
     build_resc_dir = os.path.join(build_dir, 'resources')
     build_temp_dir = os.path.join(build_dir, 'temp')
 
-    config_filename = os.path.join(base_dir, config_filename)
+    config_filename = os.path.join(base_dir, 'config.jp')
+    manifest_filename = os.path.join(base_dir, 'manifest.jp')
     build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
 
     # Command options
@@ -143,6 +143,9 @@ You can find more about Jump at http://gitorious.org/jump."""
         # Jump notice used in distriubtion
         options.jump_version = "Jump %s" % jump.VERSION
 
+        # Extracts patterns in manifest file
+        self.extract_manifest_patterns(options)
+
     def copy_jython_jars(self, options):
         """Find and build required Jython JAR files.
 
@@ -196,6 +199,28 @@ You can find more about Jump at http://gitorious.org/jump."""
             if not os.path.isdir(dest_dirname):
                 os.makedirs(dest_dirname)
             shutil.copy2(src_path, dest_path)
+
+    def extract_manifest_patterns(self, options):
+        """Extracts patterns in manifest file."""
+        if not os.path.isfile(self.manifest_filename):
+            return
+
+        manifest_patterns = []
+        for line in open(self.manifest_filename, 'r'):
+            line = line.strip()
+            try:
+                command, pattern = line.split(' ', 1)
+            except ValueError:
+                error_message = "Syntax error in manifest file: %r" % line
+                raise jump.commands.CommandError(error_message)
+            # Raise error if command is invalid
+            if command not in ['include', 'exclude']:
+                error_message = "Command not supported in manifest file: " \
+                                "%r" % command
+                raise jump.commands.CommandError(error_message)
+            manifest_patterns.append((command, pattern))
+        # Save patterns to options
+        options.manifest_patterns = manifest_patterns
 
     def create_template_file(self, src, dest, template_vars=None):
         """Creates template files for ant in `build/temp`."""

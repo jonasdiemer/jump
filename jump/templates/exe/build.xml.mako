@@ -49,6 +49,14 @@
         </jar>
 
         <launch4j configFile="launch4j.xml"/>
+
+        <copy todir="${dist_path}">
+            <fileset dir="${base_dir}">
+                % for command, pattern in manifest_patterns:
+                <${command} name="${pattern}"/>
+                % endfor
+            </fileset>
+        </copy>
     </target>
 
 </project>

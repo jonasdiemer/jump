@@ -57,6 +57,11 @@
 		        <include name="*.jar"/>
 		    </jarfileset>
 		    % endif
+		    <jarfileset dir="${base_dir}">
+                % for command, pattern in manifest_patterns:
+                <${command} name="${pattern}"/>
+                % endfor
+            </jarfileset>
 		</jarbundler>
     </target>
 
