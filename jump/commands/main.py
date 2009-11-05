@@ -204,4 +204,5 @@ You can find more about Jump at http://gitorious.org/jump."""
 
 def jump_command():
     """Runs the Jump command."""
-    JumpCommand().run()
+    jump = JumpCommand()
+    jump()

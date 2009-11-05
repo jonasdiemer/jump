@@ -117,6 +117,17 @@ class Command(object):
     config_filename = None
     required_options = None
 
+    def __call__(self, *args):
+        """Executes the command.
+
+        This method is only a delegate to the `__run` method but also catches
+        all CommandErrors and displays the error message.
+        """
+        try:
+            self.__run(*args)
+        except CommandError, e:
+            print 'Error:', e.message
+
     def generate_usage(self):
         """Generates usage messages for parser."""
         usage = [self.usage]
@@ -149,7 +160,7 @@ class Command(object):
             try:
                 key, value = line.split('=')
             except:
-                raise CommandError("Syntax error in config file.")
+                raise CommandError("Syntax error in config file: %r" % line)
             args.insert(arg_index, '--%s=%s' % (key.strip(), value.strip()))
             arg_index += 1
         config_file.close()
@@ -167,7 +178,7 @@ class Command(object):
             if not getattr(options, option_name):
                 raise CommandError("%r parameter is required." % option_name)
 
-    def run(self, *args):
+    def __run(self, *args):
         """Executes the command.
 
         Decides which command to run and execute the `command` method
@@ -214,21 +225,18 @@ class Command(object):
         # Parse arguments from command line
         (options, args) = parser.parse_args(list(args))
         options = CommandOption(options)
-        try:
-            # Determine the command instance
-            command_name = args[0] if args else None
-            if command_name in command_classes:
-                args.pop(0)     # Remove the subcommand argument
-                command_class = command_classes[command_name]
-                command_instance = command_class()
-            else:
-                command_instance = self
-            # Check required parameters
-            command_instance.check_required_options(options)
-            # Execute the command
-            command_instance.command(args, options)
-        except CommandError, e:
-            print 'Error:', e.message
+        # Determine the command instance
+        command_name = args[0] if args else None
+        if command_name in command_classes:
+            args.pop(0)     # Remove the subcommand argument
+            command_class = command_classes[command_name]
+            command_instance = command_class()
+        else:
+            command_instance = self
+        # Check required parameters
+        command_instance.check_required_options(options)
+        # Execute the command
+        command_instance.command(args, options)
         # Execute clean function
         command_instance.clean()
 
