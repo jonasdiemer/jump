@@ -77,6 +77,9 @@ You can find more about Jump at http://gitorious.org/jump."""
     parser.add_option('-m', '--main_entry_point', action="store",
                       default=None, help="main entry point, either Java or " \
                                          "Python")
+    parser.add_option('--java_only', action="store_true",
+                      default=False, help="Ignore any Jython code and " \
+                                          "JAR file")
 
     def __init__(self):
         """Initialize build environments.
@@ -106,6 +109,11 @@ You can find more about Jump at http://gitorious.org/jump."""
             # Set Java main class
             options.main_class = options.main_entry_point
             return
+
+        if options.java_only:
+            error_message = "You can't use a Python main entry point if " \
+                            "the `java_only` option is set"
+            raise jump.commands.CommandError(error_message)
 
         # Use default Main.java file to trigger Python main entry point
         template_vars = {'py_main_module': py_module, 'py_main_func': py_func}
@@ -149,7 +157,8 @@ You can find more about Jump at http://gitorious.org/jump."""
 
         options.jython_dirname = sys.prefix
         options.jythonlib_dirname = os.path.join(sys.prefix, 'Lib')
-        if not os.path.isdir(options.jythonlib_dirname):
+        if not options.java_only and \
+           not os.path.isdir(options.jythonlib_dirname):
             error_message = "Jump could not find your Jython's standard " \
                             "library at %r" % options.jythonlib_dirname
             raise jump.commands.CommandError(error_message)
@@ -163,6 +172,10 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     def copy_python_libs(self, options, dest_dir):
         """Copies required Python modules to specified directory."""
+        # Do nothing if the `java_only` option is set
+        if options.java_only:
+            return
+
         if options.include_packages:
             full_packages = options.include_packages.split(',')
         else:

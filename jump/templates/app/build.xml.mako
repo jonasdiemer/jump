@@ -10,11 +10,13 @@
         <fileset dir="${lib_dir}" includes="**/*.jar"/>
         % endif
         <fileset dir="${build_lib_dir}" includes="**/*.jar"/>
+        % if not java_only:
         <fileset dir="${jython_dirname}" includes="*.jar"/>
+        % endif
     </path>
 
     <target name="dist">
-        % if jythonlib_not_exist:
+        % if not java_only and jythonlib_not_exist:
         <jar destfile="${jythonlib_jar_filename}"
              basedir="${jythonlib_dirname}"
              excludes="site-packages/" includes="**/*.py"/>
@@ -50,9 +52,11 @@
             <jarfileset dir="${build_lib_dir}">
 		        <include name="**/*.jar"/>
 		    </jarfileset>
+		    % if not java_only:
 		    <jarfileset dir="${jython_dirname}">
 		        <include name="*.jar"/>
 		    </jarfileset>
+		    % endif
 		</jarbundler>
     </target>
 

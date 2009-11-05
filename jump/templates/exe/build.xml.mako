@@ -10,7 +10,9 @@
         <fileset dir="${lib_dir}" includes="**/*.jar"/>
         % endif
         <fileset dir="${build_lib_dir}" includes="**/*.jar"/>
+        % if not java_only:
         <fileset dir="${jython_dirname}" includes="*.jar"/>
+        % endif
     </path>
 
     <target name="init">
@@ -22,12 +24,14 @@
             <fileset dir="${lib_dir}" includes="**/*.jar"/>
             % endif
             <fileset dir="${build_lib_dir}" includes="**/*.jar"/>
+            % if not java_only:
             <fileset dir="${jython_dirname}" includes="*.jar"/>
+            % endif
         </copy>
     </target>
 
     <target name="dist" depends="init">
-        % if jythonlib_not_exist:
+        % if not java_only and jythonlib_not_exist:
         <jar destfile="${jythonlib_jar_filename}"
              basedir="${jythonlib_dirname}"
              excludes="site-packages/" includes="**/*.py"/>
@@ -35,13 +39,6 @@
 
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
                classpathref="classpath"/>
-
-        <pathconvert pathsep="${'${line.separator}'} " property="classpaths"
-                     refid="classpath">
-            <map from="${lib_dir}" to="lib"/>
-            <map from="${build_lib_dir}" to="lib"/>
-            <map from="${jython_dirname}" to="lib"/>
-        </pathconvert>
 
         <jar destfile="${build_temp_dir}/main.jar"
              basedir="${build_class_dir}">

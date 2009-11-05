@@ -10,8 +10,10 @@
     % endif
     <classPath>
         <mainClass>${main_class}</mainClass>
+        % if not java_only:
         <cp>lib/jython.jar</cp>
         <cp>lib/jython-lib.jar</cp>
+        % endif
         % for classpath in classpaths:
         <cp>${classpath}</cp>
         % endfor
