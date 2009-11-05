@@ -159,9 +159,15 @@ class Command(object):
             # Add parameters to `self.config` variable
             try:
                 key, value = line.split('=')
-            except:
-                raise CommandError("Syntax error in config file: %r" % line)
-            args.insert(arg_index, '--%s=%s' % (key.strip(), value.strip()))
+            except ValueError:
+                if ' ' not in line:
+                    option = '--%s' % line
+                else:
+                    raise CommandError("Syntax error in config file: %r" % \
+                                       line)
+            else:
+                option = '--%s=%s' % (key.strip(), value.strip())
+            args.insert(arg_index, option)
             arg_index += 1
         config_file.close()
 
