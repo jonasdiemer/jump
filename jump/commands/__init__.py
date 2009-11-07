@@ -153,7 +153,7 @@ class Command(object):
         arg_index = 0
         for line in config_file:
             # Ignore from `#` to the end of line
-            line = line.split('#')[0].strip()
+            line = line.split('#', 1)[0].strip()
             if not line:
                 continue
             # Add parameters to `self.config` variable

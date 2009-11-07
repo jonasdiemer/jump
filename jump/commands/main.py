@@ -208,7 +208,11 @@ You can find more about Jump at http://gitorious.org/jump."""
 
         manifest_patterns = []
         for line in open(self.manifest_filename, 'r'):
-            line = line.strip()
+            # Ignore from `#` to the end of line
+            line = line.split('#', 1)[0].strip()
+            if not line:
+                continue
+            # Retrieve patterns
             try:
                 command, pattern = line.split(' ', 1)
             except ValueError:
