@@ -203,6 +203,7 @@ You can find more about Jump at http://gitorious.org/jump."""
     def extract_manifest_patterns(self, options):
         """Extracts patterns in manifest file."""
         if not os.path.isfile(self.manifest_filename):
+            options.manifest_patterns = []
             return
 
         manifest_patterns = []
