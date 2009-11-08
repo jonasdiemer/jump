@@ -19,6 +19,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import shutil
 
 import jump
 from jump.commands.main import JumpCommand
@@ -55,6 +56,7 @@ class JumpAppCommand(JumpCommand):
 
     # Basic configuration
     jarbundler_filename = os.path.join(jump.lib_dir, 'jarbundler-2.1.0.jar')
+    javaappstub_filename = os.path.join(jump.lib_dir, 'JavaApplicationStub')
     template_dir = os.path.join(jump.template_dir, 'app')
 
     def create_template_files(self, options):
@@ -64,9 +66,13 @@ class JumpAppCommand(JumpCommand):
             options.icns = os.path.abspath(options.icns)
 
         options.start_on_main_thread = 'false'
-        if options.vm_options and \
-           '-XstartOnFirstThread' in options.vm_options.split(" "):
+        options.d32 = False
+        if options.vm_options:
+            vm_options = options.vm_options.split(" ")
+            if '-XstartOnFirstThread' in vm_options:
                 options.start_on_main_thread = 'true'
+            if '-d32' in vm_options:
+                options.d32 = True
 
         template_vars = {"jarbundler_filename": self.jarbundler_filename,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
@@ -90,3 +96,9 @@ class JumpAppCommand(JumpCommand):
         self.setup_dist_environments(options)
         self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)
+
+        # Use 32 bit JavaApplicationStub if `-d32` vm option is specified
+        if options.d32:
+            shutil.copy2(self.javaappstub_filename,
+                         os.path.join(options.dist_path + '.app', 'Contents',
+                                      'MacOS', 'JavaApplicationStub'))
