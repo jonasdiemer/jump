@@ -159,15 +159,16 @@ class LibTracer(object):
         if package_name in self.full_packages:
             return
 
-        try:
-            module = self.get_module_by_module_path(module_path)
-        except ImportError:
-            return
-        except java.lang.ExceptionInInitializerError:
-            raise ImportError("You can only import Java at module level: " \
-                              "%r" % module_path)
-        else:
-            self.module_paths.append(module_path)
+        while True:
+            try:
+                module = self.get_module_by_module_path(module_path)
+            except ImportError:
+                return
+            except java.lang.ExceptionInInitializerError:
+                continue
+            else:
+                self.module_paths.append(module_path)
+                break
 
         # Make sure `__init__.py` will be included at every higher level
         self.__find_modules_from_module_path(module_path.rsplit('.', 1)[0])
