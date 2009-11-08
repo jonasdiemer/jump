@@ -48,6 +48,7 @@
                 <attribute name="Built-By" value="${jump_version}"/>
             </manifest>
             <fileset dir="${base_dir}">
+                <include name =""/>
                 % for command, pattern in manifest_patterns:
                 <${command} name="${pattern}"/>
                 % endfor
