@@ -18,6 +18,8 @@
                 % for command, pattern in manifest_patterns:
                 <${command} name="${pattern}"/>
                 % endfor
+                <exclude name="build/**"/>
+                <exclude name="dist/**"/>
             </fileset>
 		</jar>
     </target>
