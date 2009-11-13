@@ -12,7 +12,7 @@
         % if jythonlib_not_exist:
         <jar destfile="${jythonlib_jar_filename}"
              basedir="${jythonlib_dirname}"
-             excludes="site-packages/" includes="**/*.py"/>
+             excludes="site-packages/,**/test/" includes="**/*.py"/>
         % endif
 
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
