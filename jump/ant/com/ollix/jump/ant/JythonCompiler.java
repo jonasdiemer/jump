@@ -7,21 +7,21 @@ import org.python.core.PyObject;
 import org.python.core.PyString;
 
 public class JythonCompiler extends Task {
-    private PyObject copy_python_libs;
+    private PyObject copyPythonModules;
     private PyString destdir;
     private PyString packages;
 
     public JythonCompiler() {
         PythonInterpreter interpreter = new PythonInterpreter();
-        interpreter.exec("from jumpanttasks.libtracer import copy_python_libs");
-        copy_python_libs = interpreter.get("copy_python_libs");
+        interpreter.exec("from jumpanttasks.jythonc import jythonc");
+        copyPythonModules = interpreter.get("jythonc");
 
         destdir = new PyString("");
         packages = new PyString("");
     }
 
     public void execute() throws BuildException {
-        copy_python_libs.__call__(this.destdir, this.packages);
+        copyPythonModules.__call__(this.destdir, this.packages);
     }
 
     public void setDestdir(String destdir) {
