@@ -57,6 +57,7 @@ class JumpJarLibCommand(JumpCommand):
     def command(self, args, options):
         """Executes the command."""
         self.copy_python_libs(options, self.build_class_dir)
+        self.copy_jython_jars(options)
         self.setup_dist_environments(options)
         self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

@@ -4,9 +4,18 @@
         % if lib_dir_exists:
         <fileset dir="${lib_dir}" includes="**/*.jar"/>
         % endif
+        % if not java_only:
+        <fileset dir="${jython_dirname}" includes="*.jar"/>
+        % endif
     </path>
 
     <target name="dist">
+        % if not java_only and jythonlib_not_exist:
+        <jar destfile="${jythonlib_jar_filename}"
+             basedir="${jythonlib_dirname}"
+             excludes="site-packages/,**/test/" includes="**/*.py"/>
+        % endif
+
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
                classpathref="classpath"/>
 
