@@ -10,10 +10,15 @@
         <fileset dir="${lib_dir}" includes="**/*.jar"/>
         % endif
         <fileset dir="${build_lib_dir}" includes="**/*.jar"/>
+        <fileset dir="${jump_lib_dir}" includes="*.jar"/>
         % if not java_only:
         <fileset dir="${jython_dirname}" includes="*.jar"/>
         % endif
     </path>
+
+    <taskdef name="jythonc"
+             classname="com.ollix.jump.ant.JythonCompiler"
+             classpathref="classpath"/>
 
     <target name="init">
         <delete dir="${dist_path}"/>
@@ -39,6 +44,10 @@
 
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
                classpathref="classpath"/>
+
+        % if not java_only:
+        <jythonc destdir="${build_class_dir}" packages="${include_packages}"/>
+        % endif
 
         <jar destfile="${build_temp_dir}/main.jar"
              basedir="${build_class_dir}">

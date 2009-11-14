@@ -67,6 +67,7 @@ class JumpWarCommand(JumpCommand):
         appengine_xml_filename = 'appengine-web.xml'
         template_vars = {"web_xml_filename": web_xml_filename,
                          "appengine_xml_filename": appengine_xml_filename,
+                         "jump_lib_dir": jump.lib_dir,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -94,7 +95,6 @@ class JumpWarCommand(JumpCommand):
     def command(self, args, options):
         """Executes the command."""
         self.copy_jython_jars(options)
-        self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
         self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

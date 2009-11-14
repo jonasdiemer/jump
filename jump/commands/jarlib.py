@@ -43,6 +43,7 @@ class JumpJarLibCommand(JumpCommand):
         # Template variables
         classpaths = sys.registry['java.class.path'].split(':')
         template_vars = {"classpaths": classpaths,
+                         "jump_lib_dir": jump.lib_dir,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -56,7 +57,6 @@ class JumpJarLibCommand(JumpCommand):
 
     def command(self, args, options):
         """Executes the command."""
-        self.copy_python_libs(options, self.build_class_dir)
         self.copy_jython_jars(options)
         self.setup_dist_environments(options)
         self.create_template_files(options)

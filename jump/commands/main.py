@@ -70,7 +70,7 @@ You can find more about Jump at http://gitorious.org/jump."""
                       default=os.path.basename(base_dir),
                       help="name of the distribution file")
     parser.add_option('-p', '--include_packages', action="store",
-                      default=None, help="include full Python packages")
+                      default="", help="include full Python packages")
     parser.add_option('-d', '--dist_dir', action="store",
                       default=os.path.join(base_dir, 'dist'),
                       help="directory to put the distribution")
@@ -159,6 +159,7 @@ You can find more about Jump at http://gitorious.org/jump."""
             raise jump.commands.CommandError(error_message)
 
         options.jython_dirname = sys.prefix
+        os.environ['JYTHON_HOME'] = sys.prefix
         options.jythonlib_dirname = os.path.join(sys.prefix, 'Lib')
         if not options.java_only and \
            not os.path.isdir(options.jythonlib_dirname):
@@ -172,33 +173,6 @@ You can find more about Jump at http://gitorious.org/jump."""
             options.jythonlib_not_exist = True
         else:
             options.jythonlib_not_exist = False
-
-    def copy_python_libs(self, options, dest_dir):
-        """Copies required Python modules to specified directory."""
-        # Do nothing if the `java_only` option is set
-        if options.java_only:
-            return
-
-        if options.include_packages:
-            full_packages = options.include_packages.split(',')
-        else:
-            full_packages = None
-
-        # Find all required Python modules or packages and copy them
-        # to the specified destnation directory
-        lib_tracer = jump.libtracer.LibTracer(self.base_dir, quiet=False,
-                                              full_packages=full_packages)
-        try:
-            lib_locations = lib_tracer.get_lib_locations()
-        except ImportError, e:
-            raise jump.commands.CommandError(e.message)
-        for sys_path, relative_path in lib_locations:
-            src_path = os.path.join(sys_path, relative_path)
-            dest_path = os.path.join(dest_dir, relative_path)
-            dest_dirname = os.path.dirname(dest_path)
-            if not os.path.isdir(dest_dirname):
-                os.makedirs(dest_dirname)
-            shutil.copy2(src_path, dest_path)
 
     def extract_manifest_patterns(self, options):
         """Extracts patterns in manifest file."""

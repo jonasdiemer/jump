@@ -75,6 +75,7 @@ class JumpAppCommand(JumpCommand):
                 options.d32 = True
 
         template_vars = {"jarbundler_filename": self.jarbundler_filename,
+                         "jump_lib_dir": jump.lib_dir,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
@@ -92,7 +93,6 @@ class JumpAppCommand(JumpCommand):
         """Executes the command."""
         self.setup_main_entry_point(options)
         self.copy_jython_jars(options)
-        self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
         self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

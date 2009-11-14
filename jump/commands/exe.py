@@ -63,6 +63,7 @@ class JumpExeCommand(JumpCommand):
                     classpath = os.path.join('lib', rel_classpath)
                     classpaths.append(classpath)
         template_vars = {"lib_dir_exists": os.path.isdir(self.lib_dir),
+                         "jump_lib_dir": jump.lib_dir,
                          "base_dir": self.base_dir,
                          "lib_dir": self.lib_dir,
                          "build_lib_dir": self.build_lib_dir,
@@ -90,7 +91,6 @@ class JumpExeCommand(JumpCommand):
         """Executes the command."""
         self.setup_main_entry_point(options)
         self.copy_jython_jars(options)
-        self.copy_python_libs(options, self.build_class_dir)
         self.setup_dist_environments(options)
         self.create_template_files(options)
         os.system('ant -buildfile %s' % self.build_xml_filename)

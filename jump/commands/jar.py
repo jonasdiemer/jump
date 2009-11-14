@@ -53,6 +53,7 @@ class JumpJarCommand(JumpCommand):
         """Creates template files for ant in `build/temp`."""
         # Template variables
         template_vars = {"onejar_jar_filename": self.onejar_jar_filename,
+                         "jump_lib_dir": jump.lib_dir,
                          "lib_dir_exists": os.path.isdir(self.lib_dir),
                          "binlib_dir_exists": os.path.isdir(self.binlib_dir),
                          "base_dir": self.base_dir,
@@ -72,7 +73,6 @@ class JumpJarCommand(JumpCommand):
         """Executes the command."""
         self.setup_main_entry_point(options)
         self.copy_jython_jars(options)
-        self.copy_python_libs(options, self.build_class_dir)
         self.copy_default_resources()
         self.setup_dist_environments(options)
         self.create_template_files(options)

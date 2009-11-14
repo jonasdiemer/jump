@@ -4,10 +4,15 @@
         % if lib_dir_exists:
         <fileset dir="${lib_dir}" includes="**/*.jar"/>
         % endif
+        <fileset dir="${jump_lib_dir}" includes="*.jar"/>
         % if not java_only:
         <fileset dir="${jython_dirname}" includes="*.jar"/>
         % endif
     </path>
+
+    <taskdef name="jythonc"
+             classname="com.ollix.jump.ant.JythonCompiler"
+             classpathref="classpath"/>
 
     <target name="dist">
         % if not java_only and jythonlib_not_exist:
@@ -18,6 +23,10 @@
 
         <javac destdir="${build_class_dir}" srcdir="${base_dir}"
                classpathref="classpath"/>
+
+        % if not java_only:
+        <jythonc destdir="${build_class_dir}" packages="${include_packages}"/>
+        % endif
 
 		<jar destfile="${dist_path}.jar" basedir="${build_class_dir}">
 			<manifest>

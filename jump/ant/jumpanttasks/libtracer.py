@@ -23,9 +23,9 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 import types
-import copy
 import py_compile
 import java
+
 
 class LibTracer(object):
     """Traces all required Python modules from a certain directory."""
@@ -35,7 +35,7 @@ class LibTracer(object):
     ignored_module_attribute_names = ['__builtins__', '__doc__', '__name__']
 
     def __init__(self, basedir, full_packages=None, module_extensions=None,
-                 quiet=False):
+                 syspath=None, quiet=False):
         """Initialize a ModuleTracer instance.
 
         Converts the specified `basedir` to absolute path and adds it to the
@@ -61,6 +61,8 @@ class LibTracer(object):
             self.basedir = os.path.abspath(basedir)
 
         # Create a list of system paths appending specified directory
+        if syspath:
+            sys.path = syspath + sys.path
         sys.path.insert(0, self.basedir)
 
         self.quiet = quiet
@@ -96,12 +98,12 @@ class LibTracer(object):
                 break
         else:
             raise OSError("The filename extension must be one of " \
-                                 "`.py`, `.pyc` or `$py.class`.")
+                          "`.py`, `.pyc` or `$py.class`.")
 
         try:
             for sys_path in sys.path:
                 # Exclude standard library
-                if sys_path.endswith('/Lib'):
+                if sys_path.endswith('/Lib') or sys_path.startswith('__'):
                     continue
                 # Convert to module path
                 if filename.startswith(sys_path):
@@ -233,7 +235,7 @@ class LibTracer(object):
 
             # Separate module_filename to system path and the rest
             for sys_path in sys.path:
-                if sys_path.endswith('/Lib') or \
+                if sys_path.endswith('/Lib') or sys_path.startswith('__') or \
                    not module_filename.startswith(sys_path):
                     continue
 
