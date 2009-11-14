@@ -28,7 +28,7 @@ from jump import commands
 from jump import libtracer
 
 
-VERSION = "0.9.6.2"
+VERSION = "0.9.6.3"
 
 # Directory paths
 lib_dir = pkg_resources.resource_filename('jump', 'lib')
