@@ -257,6 +257,8 @@ class LibTracer(object):
                         py_compile.compile(filename)
                         # Rename filename with a `$py.class` extension
                         filename = path_without_ext + '$py.class'
+                    if not os.path.isfile(filename):
+                        continue
                     prefix = sys_path + os.path.sep
                     filename = filename.split(prefix, 1)[1]
                     location = (sys_path, filename)

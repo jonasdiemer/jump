@@ -22,8 +22,6 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
-import types
-import shutil
 
 from mako.template import Template
 
@@ -50,24 +48,19 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     # Basic configuration
     base_dir = os.getcwd()
-    lib_dir = os.path.join(base_dir, 'lib')
-    binlib_dir = os.path.join(base_dir, 'binlib')
-    build_dir = os.path.join(base_dir, 'build')
-    build_lib_dir = os.path.join(build_dir, 'lib')
-    build_class_dir = os.path.join(build_dir, 'classes')
-    build_resc_dir = os.path.join(build_dir, 'resources')
-    build_temp_dir = os.path.join(build_dir, 'temp')
-
     config_filename = os.path.join(base_dir, 'config.jp')
     manifest_filename = os.path.join(base_dir, 'manifest.jp')
-    build_xml_filename = os.path.join(build_temp_dir, 'build.xml')
+    build_xml_filename = os.path.join(base_dir, 'build.xml')
+    build_xml_template = os.path.join(jump.jump_dir, 'templates', 'build.xml')
+
+    default_dist_name = os.path.basename(base_dir)
 
     # Command options
     parser = jump.commands.OptionParser()
     parser.add_option('-v', '--verbose', action="store_true",
                       default=False, help="run in verbose mode")
     parser.add_option('-n', '--dist_name', action="store",
-                      default=os.path.basename(base_dir),
+                      default=default_dist_name,
                       help="name of the distribution file")
     parser.add_option('-p', '--include_packages', action="store",
                       default="", help="include full Python packages")
@@ -81,98 +74,18 @@ You can find more about Jump at http://gitorious.org/jump."""
                       default=False, help="Ignore any Jython code and " \
                                           "JAR file")
 
-    def __init__(self):
-        """Initialize build environments.
-
-        Creates some directories for build, the created directories include:
-            CURRENT_DIRECTORY
-            |-- build           # build-related files
-                |-- lib         # .jar files
-                |-- classes     # Java bytecode class files
-                |-- resources   # static files
-                |-- temp        # temporary files
-        """
-        # Create `build` and nested directories
-        if os.path.isdir(self.build_dir):
-            shutil.rmtree(self.build_dir)
-        os.mkdir(self.build_dir)
-        for dir_name in (self.build_lib_dir, self.build_class_dir,
-                         self.build_resc_dir, self.build_temp_dir):
-            os.mkdir(dir_name)
-
-    def setup_main_entry_point(self, options):
-        """Setup main entry point."""
-        # Interpret `main_entry_point` parameter
-        try:
-            py_module, py_func = options.main_entry_point.split(':')
-        except ValueError:
-            # Set Java main class
-            options.main_class = options.main_entry_point
-            return
-
-        if options.java_only:
-            error_message = "You can't use a Python main entry point if " \
-                            "the `java_only` option is set"
-            raise jump.commands.CommandError(error_message)
-
-        # Use default Main.java file to trigger Python main entry point
-        template_vars = {'py_main_module': py_module, 'py_main_func': py_func}
-        main_java_template = os.path.join(jump.template_dir, 'java',
-                                          'main.java.mako')
-        main_java_filename = os.path.join(self.build_temp_dir, 'Main.java')
-        self.create_template_file(main_java_template, main_java_filename,
-                                  template_vars)
-        options.main_class = 'com.ollix.jump.Main'
-
-    def setup_dist_environments(self, options):
+    def initialize(self, options):
         """Setup distribuiton enviroments"""
-        # Convert dist_dir to absolute path
-        if not os.path.isabs(options.dist_dir):
-            options.dist_dir = os.path.abspath(options.dist_dir)
-
-        if not os.path.isdir(options.dist_dir):
-            try:
-                os.mkdir(options.dist_dir)
-            except OSError:
-                parent_dir = os.path.dirname(options.dist_dir)
-                error_message = "Could not make the `dist_dir` directory " \
-                                "because %r does not exist." % (parent_dir,)
-                raise jump.commands.CommandError(error_message)
-        options.dist_path = os.path.join(options.dist_dir, options.dist_name)
-
-        # Jump notice used in distriubtion
+        self.options = options
+        options.jump_dir = jump.jump_dir
         options.jump_version = "Jump %s" % jump.VERSION
+        options.java_only = "true" if options.java_only else "false"
 
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)
 
-    def copy_jython_jars(self, options):
-        """Find and build required Jython JAR files.
-
-        Real build work would be done by Ant.
-        """
-        try:
-            import org.python
-        except ImportError:
-            error_message = "Jump could not find your `jython.jar`, please " \
-                            "make sure this file is added to your class path."
-            raise jump.commands.CommandError(error_message)
-
-        options.jython_dirname = sys.prefix
-        os.environ['JYTHON_HOME'] = sys.prefix
-        options.jythonlib_dirname = os.path.join(sys.prefix, 'Lib')
-        if not options.java_only and \
-           not os.path.isdir(options.jythonlib_dirname):
-            error_message = "Jump could not find your Jython's standard " \
-                            "library at %r" % options.jythonlib_dirname
-            raise jump.commands.CommandError(error_message)
-
-        options.jythonlib_jar_filename = os.path.join(sys.prefix,
-                                                      'jython-lib.jar')
-        if not os.path.isfile(options.jythonlib_jar_filename):
-            options.jythonlib_not_exist = True
-        else:
-            options.jythonlib_not_exist = False
+        # Set Jython's root directory
+        os.environ['JYTHON_HOME'] = options.jython_home = sys.prefix
 
     def extract_manifest_patterns(self, options):
         """Extracts patterns in manifest file."""
@@ -201,24 +114,18 @@ You can find more about Jump at http://gitorious.org/jump."""
         # Save patterns to options
         options.manifest_patterns = manifest_patterns
 
-    def create_template_file(self, src, dest, template_vars=None):
+    def create_template_file(self, template, output):
         """Creates template files for ant in `build/temp`."""
-        if not template_vars:
-            template_vars = {}
-        build_tempalte = Template(filename=src)
-        dest_file = open(dest, 'w')
-        dest_file.write(build_tempalte.render(**template_vars))
-        dest_file.close()
+        output_dir = os.path.dirname(output)
+        tempalte = Template(filename=template)
+        output_file = open(output, 'w')
+        output_file.write(tempalte.render(**self.options))
+        output_file.close()
 
     def command(self, args, options):
         """Returns help message."""
         jump = JumpCommand()
         jump('-h')
-
-    def clean(self):
-        """Removes all generated files used for build."""
-        # Remove `build` directory
-        shutil.rmtree(self.build_dir)
 
 def jump_command():
     """Runs the Jump command."""

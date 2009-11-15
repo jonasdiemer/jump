@@ -24,29 +24,8 @@ import os
 import sys
 import shutil
 
-from jumpanttasks.libtracer import LibTracer
+from jump.libtracer import LibTracer
 
-
-def get_sys_path():
-    """Get system paths from the JYTHON_HOME environment variable."""
-    jython_lib_dir = os.path.join(os.environ['JYTHON_HOME'], 'Lib')
-    site_package_dir = os.path.join(jython_lib_dir, 'site-packages')
-    easy_install_pth = os.path.join(site_package_dir, 'easy-install.pth')
-    syspath = []
-    if os.path.isfile(easy_install_pth):
-        for line in open(easy_install_pth, 'r'):
-            line = line.strip()
-            if line and ' ' not in line:
-                if line.startswith('./'):
-                    path = os.path.join(site_package_dir, line[2:])
-                elif line.startswith('/'):
-                    path = line
-                else:
-                    continue
-                syspath.append(path)
-    syspath.append(site_package_dir)
-    syspath.append(jython_lib_dir)
-    return syspath
 
 def jythonc(destdir, packages):
     """Copies required Python modules to specified directory."""
@@ -56,8 +35,7 @@ def jythonc(destdir, packages):
     # Find all required Python modules or packages and copy them
     # to the specified destnation directory
     sys.path.append(destdir)
-    lib_tracer = LibTracer('.', quiet=True, full_packages=packages,
-                           syspath=get_sys_path())
+    lib_tracer = LibTracer('.', quiet=True, full_packages=packages)
     lib_locations = lib_tracer.get_lib_locations()
     print 'Compiling %d source files to %s' % (len(lib_locations), destdir)
     for sys_path, relative_path in lib_locations:

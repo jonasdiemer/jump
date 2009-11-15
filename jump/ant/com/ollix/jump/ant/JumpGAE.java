@@ -27,30 +27,30 @@ import org.python.core.PyObject;
 import org.python.core.PyString;
 import com.ollix.jump.ant.JumpFactory;
 
-public class JythonCompiler extends Task
+public class JumpGAE extends Task
 {
-    private PyObject jythonc;
-    private PyString destdir;
-    private PyString packages;
+    private PyObject gae;
+    private PyString destDir;
+    private PyString string;
 
-    public JythonCompiler() {
+    public JumpGAE() {
         PythonInterpreter interpreter = JumpFactory.getInterpreter();
-        interpreter.exec("from jump.ant.jythonc import jythonc");
-        jythonc = interpreter.get("jythonc");
+        interpreter.exec("from jump.ant.gae import gae");
+        gae = interpreter.get("gae");
 
-        destdir = new PyString("");
-        packages = new PyString("");
+        destDir = new PyString("");
+        string = new PyString("");
     }
 
     public void execute() throws BuildException {
-        jythonc.__call__(this.destdir, this.packages);
+        gae.__call__(this.destDir, this.string);
     }
 
-    public void setDestdir(String destdir) {
-        this.destdir = new PyString(destdir);
+    public void setDestDir(String destDir) {
+        this.destDir = new PyString(destDir);
     }
 
-    public void setPackages(String packages) {
-        this.packages = new PyString(packages);
+    public void setString(String string) {
+        this.string = new PyString(string);
     }
 }

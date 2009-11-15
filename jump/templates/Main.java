@@ -7,8 +7,8 @@ public class Main
 {
     public static void main(String[] args) throws PyException
     {
-        PythonInterpreter intrp = new PythonInterpreter();
-        intrp.exec("import ${py_main_module} as module");
-        intrp.exec("module.${py_main_func}()");
+        PythonInterpreter interpreter = new PythonInterpreter();
+        interpreter.exec("import ${py_main_module} as module");
+        interpreter.exec("module.${py_main_func}()");
     }
 }

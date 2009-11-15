@@ -21,7 +21,6 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
-import sys
 
 import jump
 from jump.commands.main import JumpCommand
@@ -30,34 +29,15 @@ from jump.commands.main import JumpCommand
 class JumpJarLibCommand(JumpCommand):
     """Jump jarlib command.
 
-    Make a JAR library file.
+    Make JAR library files.
     """
-    usage = "make a JAR library file"
+    usage = "make JAR library files"
     parser = jump.commands.OptionParser()
-
-    # Basic configuration
-    template_dir = os.path.join(jump.template_dir, 'jarlib')
-
-    def create_template_files(self, options):
-        """Creates template files for ant in `build/temp`."""
-        # Template variables
-        classpaths = sys.registry['java.class.path'].split(':')
-        template_vars = {"classpaths": classpaths,
-                         "jump_lib_dir": jump.lib_dir,
-                         "lib_dir_exists": os.path.isdir(self.lib_dir),
-                         "base_dir": self.base_dir,
-                         "lib_dir": self.lib_dir,
-                         "build_lib_dir": self.build_lib_dir,
-                         "build_class_dir": self.build_class_dir}
-        options.update(template_vars)
-        # build.xml
-        build_xml_template = os.path.join(self.template_dir, 'build.xml.mako')
-        JumpCommand.create_template_file(self, build_xml_template,
-                                         self.build_xml_filename, options)
 
     def command(self, args, options):
         """Executes the command."""
-        self.copy_jython_jars(options)
-        self.setup_dist_environments(options)
-        self.create_template_files(options)
-        os.system('ant -buildfile %s' % self.build_xml_filename)
+        self.initialize(options)
+        # Create build.xml
+        self.create_template_file(self.build_xml_template,
+                                  self.build_xml_filename)
+        os.system('ant jarlib -buildfile %s' % self.build_xml_filename)

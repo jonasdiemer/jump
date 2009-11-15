@@ -31,5 +31,6 @@ from jump import libtracer
 VERSION = "0.9.6.3"
 
 # Directory paths
+jump_dir = os.path.dirname(__file__)
 lib_dir = pkg_resources.resource_filename('jump', 'lib')
-template_dir = pkg_resources.resource_filename('jump', 'templates')
+temp_dir = pkg_resources.resource_filename('jump', 'templates')
