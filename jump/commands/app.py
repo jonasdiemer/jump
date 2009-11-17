@@ -20,6 +20,8 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
+import oparse
+
 import jump
 from jump.commands.main import JumpCommand
 
@@ -30,7 +32,7 @@ class JumpAppCommand(JumpCommand):
     Make Mac Application Bundles.
     """
     usage = "make Mac Application Bundles"
-    parser = jump.commands.OptionParser()
+    parser = oparse.OptionParser()
     parser.add_option('--vm_arguments', action="store", default="",
                       help="extra command-line arguments for the Java " \
                            "application")

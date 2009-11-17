@@ -23,12 +23,13 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 
+import oparse
 from mako.template import Template
 
 import jump
 
 
-class JumpCommand(jump.commands.Command):
+class JumpCommand(oparse.Command):
     """The basic Jump command.
 
     This class implement the basic Jump command. All Jump's subcommand classes
@@ -40,23 +41,22 @@ class JumpCommand(jump.commands.Command):
         version: Indicates the current Jump version.
         parser: Instantiates OptionParse class to add some parser options.
     """
-    subcmd_entry_point = 'jump.commands'
     usage = '%prog command [options] arg1 arg2 ...'
     description = """Jump is a build tool for distributing Jython applications.
 You can find more about Jump at http://gitorious.org/jump."""
     version = '%prog ' + jump.VERSION
+    subcommand_entry_point = 'jump.commands'
 
     # Basic configuration
     base_dir = os.getcwd()
     config_filename = os.path.join(base_dir, 'config.jp')
     manifest_filename = os.path.join(base_dir, 'manifest.jp')
     build_xml_filename = os.path.join(base_dir, 'build.xml')
-    build_xml_template = os.path.join(jump.jump_dir, 'templates', 'build.xml')
-
+    build_xml_template = os.path.join(jump.temp_dir, 'build.xml')
     default_dist_name = os.path.basename(base_dir)
 
     # Command options
-    parser = jump.commands.OptionParser()
+    parser = oparse.OptionParser()
     parser.add_option('-v', '--verbose', action="store_true",
                       default=False, help="run in verbose mode")
     parser.add_option('-n', '--dist_name', action="store",

@@ -24,9 +24,6 @@ import os
 
 import pkg_resources
 
-from jump import commands
-from jump import libtracer
-
 
 VERSION = "0.9.6.3"
 

@@ -22,6 +22,8 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
+import oparse
+
 import jump
 from jump.commands.main import JumpCommand
 
@@ -32,7 +34,7 @@ class JumpJarLibCommand(JumpCommand):
     Make JAR library files.
     """
     usage = "make JAR library files"
-    parser = jump.commands.OptionParser()
+    parser = oparse.OptionParser()
 
     def command(self, args, options):
         """Executes the command."""

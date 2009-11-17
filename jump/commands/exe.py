@@ -20,6 +20,8 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
+import oparse
+
 import jump
 from jump.commands.main import JumpCommand
 
@@ -30,7 +32,7 @@ class JumpExeCommand(JumpCommand):
     Make Windows native executables.
     """
     usage = "make Windows native executables"
-    parser = jump.commands.OptionParser()
+    parser = oparse.OptionParser()
     parser.add_option('--gui', action="store_true", default=False,
                       help="use GUI instead of console mode")
     parser.add_option('--ico', action="store",

@@ -20,6 +20,8 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
+import oparse
+
 import jump
 from jump.commands.main import JumpCommand
 
@@ -30,7 +32,7 @@ class JumpWarCommand(JumpCommand):
     Make a War file for Python WSGI applications.
     """
     usage = "make a War file for Python WSGI applications"
-    parser = jump.commands.OptionParser()
+    parser = oparse.OptionParser()
     parser.add_option('--wsgi_handler', action="store",
                       default='application.handler',
                       help="callable wsgi handler")
