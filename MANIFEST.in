@@ -4,3 +4,4 @@ include LICENSE
 recursive-include jump *.java *.jp
 recursive-include jump/lib *
 recursive-include jump/templates *
+recursive-include jump/resources *
