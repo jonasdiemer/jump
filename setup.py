@@ -40,7 +40,7 @@ setup(name='jump',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      install_requires=['oparse==0.9.0',
+      install_requires=['oparse>=0.9.0.1',
                         'mako>=0.2.5'],
       extras_require = {},
       entry_points="""
