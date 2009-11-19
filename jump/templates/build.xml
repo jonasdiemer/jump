@@ -172,7 +172,7 @@
             <fileset refid="build.resc"/>
         </one-jar>
 
-        <!--antcall target="clean"/-->
+        <antcall target="clean"/>
     </target>
 
     <target name="jarlib" depends="compile">
@@ -336,6 +336,8 @@
                 <include name="appengine-web.xml"/>
             </webinf>
         </war>
+
+        <antcall target="clean"/>
     </target>
 
     <target name="clean">
