@@ -20,18 +20,10 @@
 
 package com.ollix.jump.ant;
 
-import org.python.util.PythonInterpreter;
+import org.apache.tools.ant.BuildException;
 
-public class JumpFactory
-{
-    private static PythonInterpreter interpreter;
-
-    public static PythonInterpreter getInterpreter() {
-        if (interpreter == null) {
-            interpreter = new PythonInterpreter();
-            interpreter.exec("from jumpanttasks.syspath import set_sys_path");
-            interpreter.exec("set_sys_path()");
-        }
-        return interpreter;
-    }
+public interface JythonCompilerType {
+    public void execute() throws BuildException;
+    public void setDestDir(String destDir);
+    public void setFullPackages(String packages);
 }

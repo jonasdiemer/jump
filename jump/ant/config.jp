@@ -1,3 +1,0 @@
-dist_dir = ../lib
-dist_name = jump-ant-tasks
-java_only

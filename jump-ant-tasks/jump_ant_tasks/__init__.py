@@ -3,7 +3,7 @@
 """
 __init__.py
 
-Created by Olli Wang (olliwang@ollix.com) on 2009-11-14.
+Created by Olli Wang (olliwang@ollix.com) on 2009-11-18.
 Copyright (c) 2009 Ollix. All rights reserved.
 
 Jump is free software: you can redistribute it and/or modify it under the

@@ -64,6 +64,7 @@ class LibTracer(object):
         if syspath:
             sys.path = syspath + sys.path
         sys.path.insert(0, self.basedir)
+        sys.path.remove('__pyclasspath__/')
 
         self.quiet = quiet
 
@@ -228,6 +229,13 @@ class LibTracer(object):
             except AttributeError:
                 continue
 
+            # Fix filename if starts with `__pyclasspath__`
+            if module_filename.startswith('__pyclasspath__'):
+                module_filename = module_filename.replace('__pyclasspath__',
+                                                          self.basedir)
+                if module_filename.endswith('$py.class'):
+                    module_filename = module_filename[:-9] + '.py'
+
             # Ignore `.jar` files and None for `module_filename`
             # TODO (olliwang): Support adding `.jar` files automatically
             if not module_filename or module_filename.endswith('.jar'):
@@ -247,7 +255,7 @@ class LibTracer(object):
                         for basename in basenames:
                             filename = os.path.join(root, basename)
                             filenames.append(filename)
-                else:
+                elif os.path.isfile(module_filename):
                     filenames.append(module_filename)
 
                 for filename in filenames:
@@ -257,8 +265,6 @@ class LibTracer(object):
                         py_compile.compile(filename)
                         # Rename filename with a `$py.class` extension
                         filename = path_without_ext + '$py.class'
-                    if not os.path.isfile(filename):
-                        continue
                     prefix = sys_path + os.path.sep
                     filename = filename.split(prefix, 1)[1]
                     location = (sys_path, filename)

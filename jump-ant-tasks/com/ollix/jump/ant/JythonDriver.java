@@ -22,35 +22,30 @@ package com.ollix.jump.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.python.util.PythonInterpreter;
-import org.python.core.PyObject;
-import org.python.core.PyString;
-import com.ollix.jump.ant.JumpFactory;
+import com.ollix.jump.JythonFactory;
+import com.ollix.jump.ant.JythonDriverType;
 
 public class JythonDriver extends Task
 {
-    private PyObject driver;
-    private PyString mainEntryPoint;
-    private PyString destDir;
+    private JythonDriverType jythonDriver;
 
     public JythonDriver() {
-        PythonInterpreter interpreter = JumpFactory.getInterpreter();
-        interpreter.exec("from jump.ant.driver import driver");
-        driver = interpreter.get("driver");
-
-        mainEntryPoint = new PyString("");
-        destDir = new PyString("");
+        JythonFactory factory = new JythonFactory(
+            JythonDriverType.class, "jump_ant_tasks.jython_driver",
+            "JythonDriver");
+        
+        jythonDriver = (JythonDriverType) factory.init();
     }
 
     public void execute() throws BuildException {
-        driver.__call__(this.mainEntryPoint, this.destDir);
+        jythonDriver.execute();
     }
-
+    
     public void setMainEntryPoint(String mainEntryPoint) {
-        this.mainEntryPoint = new PyString(mainEntryPoint);
+        jythonDriver.setMainEntryPoint(mainEntryPoint);
     }
 
-    public void setDestDir(String destDir) {
-        this.destDir = new PyString(destDir);
+    public void setDestdir(String destDir) {
+        jythonDriver.setDestDir(destDir);
     }
 }

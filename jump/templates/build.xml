@@ -72,7 +72,7 @@
         <path id="jump.classpath">
             <fileset dir="${jython.home}"
                      includes="jython.jar,jythonlib.jar"/>
-            <fileset dir="${jump.dir}/lib" includes="*.jar,launch4j/*.jar"/>
+            <fileset dir="${jump.dir}/lib" includes="**/*.jar"/>
         </path>
 
         <taskdef resource="net/sf/antcontrib/antcontrib.properties"
@@ -136,7 +136,8 @@
             <then>
                 <taskdef name="jythonc" classpathref="jump.classpath"
                          classname="com.ollix.jump.ant.JythonCompiler"/>
-                <jythonc destdir="${build.class.dir}" packages="${packages}"/>
+                <jythonc destdir="${build.class.dir}"
+                         fullpackages="${packages}"/>
             </then>
         </if>
     </target>
