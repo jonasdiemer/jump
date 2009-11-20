@@ -55,6 +55,7 @@ class JythonCompiler(JythonCompilerType):
             shutil.copy2(src_path, dest_path)
         print 'Compiling %d source files to %s' % (len(lib_locations),
                                                    self.dest_dir)
+
     def setDestDir(self, dest_dir):
         self.dest_dir = dest_dir
 
