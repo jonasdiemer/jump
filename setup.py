@@ -20,6 +20,8 @@ You should have received a copy of the GNU General Public License along
 with Jump.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -29,6 +31,10 @@ except ImportError:
 
 import jump
 
+
+if not sys.platform.startswith('java'):
+    print 'error: Jump can only be installed with Jython.'
+    sys.exit()
 
 setup(name='jump',
       version=jump.VERSION,
