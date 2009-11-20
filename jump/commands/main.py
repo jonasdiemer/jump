@@ -74,6 +74,8 @@ You can find more about Jump at http://gitorious.org/jump."""
     parser.add_option('--java_only', action="store_true",
                       default=False, help="Ignore any Jython code and " \
                                           "JAR file")
+    parser.add_option('--jump_jython_factory', action="store_true",
+                      default=False, help="Use Jump's Jython factory.")
 
     def initialize(self, options):
         """Setup distribuiton enviroments"""
@@ -81,7 +83,11 @@ You can find more about Jump at http://gitorious.org/jump."""
         options.base_dir = self.base_dir
         options.jump_dir = jump.jump_dir
         options.jump_version = "Jump %s" % jump.VERSION
-        options.java_only = "true" if options.java_only else "false"
+
+        # Convert boolean values
+        for option in ['java_only', 'jump_jython_factory']:
+            options[option] = "true" if options[option] else "false"
+
 
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)

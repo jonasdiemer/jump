@@ -19,6 +19,7 @@
 
     <property name="jump.dir" value="${jump_dir}"/>
     <property name="jump.version" value="${jump_version}"/>
+    <property name="jump.jythonfactory" value="${jump_jython_factory}"/>
 
     <property name="app.shortname" value="${short_name}"/>
     <property name="app.icns" value="${icns}"/>
@@ -105,6 +106,14 @@
                 <fileset dir="${jython.home}" id="jython.lib"
                          excludes="**"/>
             </else>
+        </if>
+
+        <if>
+            <istrue value="${jump.jythonfactory}"/>
+            <then>
+                <copy file="${jump.dir}/lib/jump-jython-factory.jar"
+                      todir="${build.lib.dir}"/>
+            </then>
         </if>
     </target>
 
@@ -341,7 +350,7 @@
     </target>
 
     <target name="clean">
-        <delete dir="${build.dir}"/>
+        <!--delete dir="${build.dir}"/-->
     </target></%text>
 
 </project>
