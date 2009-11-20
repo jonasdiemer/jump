@@ -65,6 +65,7 @@ class LibTracer(object):
             sys.path = syspath + sys.path
         sys.path.insert(0, self.basedir)
         sys.path.remove('__pyclasspath__/')
+        self.sys_path = sys.path[:]
 
         self.quiet = quiet
 
@@ -102,7 +103,7 @@ class LibTracer(object):
                           "`.py`, `.pyc` or `$py.class`.")
 
         try:
-            for sys_path in sys.path:
+            for sys_path in self.sys_path:
                 # Exclude standard library
                 if sys_path.endswith('/Lib') or sys_path.startswith('__'):
                     continue
@@ -242,7 +243,7 @@ class LibTracer(object):
                 continue
 
             # Separate module_filename to system path and the rest
-            for sys_path in sys.path:
+            for sys_path in self.sys_path:
                 if sys_path.endswith('/Lib') or sys_path.startswith('__') or \
                    not module_filename.startswith(sys_path):
                     continue
