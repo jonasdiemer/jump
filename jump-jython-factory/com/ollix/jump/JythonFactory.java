@@ -27,32 +27,46 @@ import org.python.core.PySystemState;
 public class JythonFactory {
 
     private final Class interfaceType;
-    private final PyObject pyClass;
+    private final PyObject callable;
 
     public JythonFactory(PySystemState state, Class interfaceType,
-                         String modulePath, String className) {
+                         String modulePath, String callable) {
         this.interfaceType = interfaceType;
         PyObject importer = state.getBuiltins().__getitem__(
-                                Py.newString("__import__"));
+                                    Py.newString("__import__"));
         PyObject module = importer.__call__(Py.newString(modulePath));
         String modules[] = modulePath.split("\\.");
         for (int i = 1; i < modules.length; i++) {
             String moduleName = modules[i];
             module = module.__getattr__(moduleName);
         }
-        pyClass = module.__getattr__(className);
+        this.callable = module.__getattr__(callable);
     }
 
     public JythonFactory(Class interfaceType, String modulePath,
-                         String className) {
-        this(new PySystemState(), interfaceType, modulePath, className);
+                         String callable) {
+        this(new PySystemState(), interfaceType, modulePath, callable);
     }
 
-    public Object init(Object... args) {
+    public JythonFactory(String modulePath, String callable) {
+        this(null, modulePath, callable);
+    }
+
+    private PyObject[] convertToPyArguments(Object... args) {
         PyObject pyArgs[] = new PyObject[args.length];
         for (int i = 0; i < args.length; i++) {
             pyArgs[i] = Py.java2py(args[i]);
         }
-        return pyClass.__call__(pyArgs).__tojava__(interfaceType);
+        return pyArgs;
+    }
+
+    public Object init(Object... args) {
+        PyObject pyArgs[] = convertToPyArguments(args);
+        return callable.__call__(pyArgs).__tojava__(interfaceType);
+    }
+
+    public Object call(Object... args) {
+        PyObject pyArgs[] = convertToPyArguments(args);
+        return callable.__call__(pyArgs);
     }
 }
