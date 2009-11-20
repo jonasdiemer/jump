@@ -1,4 +1,4 @@
-<project name="${dist_name}" basedir=".">
+<project name="${dist_name}" basedir="${base_dir}">
 
     <property name="dist.name" value="${dist_name}"/>
     <property name="dist.dir" value="${dist_dir}"/>

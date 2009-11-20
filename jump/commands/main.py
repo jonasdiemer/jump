@@ -22,6 +22,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import tempfile
 
 import oparse
 from mako.template import Template
@@ -51,7 +52,7 @@ You can find more about Jump at http://gitorious.org/jump."""
     base_dir = os.getcwd()
     config_filename = os.path.join(base_dir, 'config.jp')
     manifest_filename = os.path.join(base_dir, 'manifest.jp')
-    build_xml_filename = os.path.join(base_dir, 'build.xml')
+    build_xml_filename = os.path.join(tempfile.gettempdir(), 'build.xml')
     build_xml_template = os.path.join(jump.temp_dir, 'build.xml')
     default_dist_name = os.path.basename(base_dir)
 
@@ -77,6 +78,7 @@ You can find more about Jump at http://gitorious.org/jump."""
     def initialize(self, options):
         """Setup distribuiton enviroments"""
         self.options = options
+        options.base_dir = self.base_dir
         options.jump_dir = jump.jump_dir
         options.jump_version = "Jump %s" % jump.VERSION
         options.java_only = "true" if options.java_only else "false"
@@ -126,6 +128,9 @@ You can find more about Jump at http://gitorious.org/jump."""
         """Returns help message."""
         jump = JumpCommand()
         jump('-h')
+
+    def clean(self):
+        os.remove(self.build_xml_filename)
 
 def jump_command():
     """Runs the Jump command."""
