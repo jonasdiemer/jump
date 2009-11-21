@@ -61,6 +61,7 @@ setup(name='jump',
       exe = jump.commands.exe:JumpExeCommand
       app = jump.commands.app:JumpAppCommand
       war = jump.commands.war:JumpWarCommand
+      ant = jump.commands.ant:JumpAntCommand
       """,
       classifiers=[
           'Intended Audience :: Developers',
