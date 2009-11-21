@@ -85,14 +85,21 @@ You can find more about Jump at http://gitorious.org/jump."""
         options.jump_version = "Jump %s" % jump.VERSION
 
         # Convert boolean values
-        for option in ['java_only', 'jump_jython_factory']:
-            options[option] = "true" if options[option] else "false"
+        self.convert_boolean_values(['java_only', 'jump_jython_factory'])
 
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)
 
         # Set Jython's root directory
         os.environ['JYTHON_HOME'] = options.jython_home = sys.prefix
+
+    def convert_boolean_values(self, option_names):
+        """Convert boolean values to true or false respectively."""
+        for option_name in option_names:
+            if self.options[option_name]:
+                self.options[option_name] = "true"
+            else:
+                self.options[option_name] = "false"
 
     def extract_manifest_patterns(self, options):
         """Extracts patterns in manifest file."""

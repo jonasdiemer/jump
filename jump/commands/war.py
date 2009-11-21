@@ -46,16 +46,13 @@ class JumpWarCommand(JumpCommand):
                                           "`ID:VERSION`")
     parser.add_option('--no_multithread', action="store_true", default=False,
                       help="whether to run in multithread mode")
-    required_options = ['wsgi_handler']
 
     def command(self, args, options):
         """Executes the command."""
         self.initialize(options)
+        # Convert boolean values
+        self.convert_boolean_values(['cache_callables', 'no_multithread'])
         # Create build.xml
         self.create_template_file(self.build_xml_template,
                                   self.build_xml_filename)
-        # Create web.xml
-        web_xml = 'web.xml'
-        self.create_template_file(os.path.join(jump.temp_dir, web_xml),
-                                  os.path.join(self.base_dir, web_xml))
         os.system('ant war -buildfile %s' % self.build_xml_filename)

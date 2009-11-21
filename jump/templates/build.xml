@@ -35,7 +35,10 @@
     <property name="exe.ico" value="${ico}"/>
 
     <property name="war.googleAppEngine" value="${google_app_engine}"/>
-
+    <property name="war.wsgihandler" value="${wsgi_handler}"/>
+    <property name="war.nomultithread" value="${no_multithread}"/>
+    <property name="war.cachecallables" value="${cache_callables}"/>
+    <property name="war.loglevel" value="${log_level}"/>
 
     <%text><fileset dir="${lib.dir}" id="proj.lib">
         <include name="**/*.jar"/>
@@ -327,12 +330,22 @@
             </manifest>
         </jar>
 
-        <taskdef name="jumpgae" classpathref="jump.classpath"
-                 classname="com.ollix.jump.ant.JumpGAE"/>
-        <jumpgae destdir="${build.tmp.dir}" string="${war.googleAppEngine}"/>
+        <property name="war.wsgihandler" value="${wsgi_handler}"/>
+        <property name="war.nomultithread" value="${no_multithread}"/>
+        <property name="war.cachecallables" value="${cache_callables}"/>
+        <property name="war.loglevel" value="${log_level}"/>
+
+        <taskdef name="wartemplate" classpathref="jump.classpath"
+                 classname="com.ollix.jump.ant.WarTemplate"/>
+        <wartemplate destdir="${build.tmp.dir}"
+                     wsgihandler="${war.wsgihandler}"
+                     nomultithread="${war.nomultithread}"
+                     cachecallables="${war.cachecallables}"
+                     loglevel="${war.loglevel}"
+                     googleappengine="${war.googleAppEngine}"/>
 
         <war destfile="${dist.dir}/${dist.name}.war"
-             webxml="${basedir}/web.xml">
+             webxml="${build.tmp.dir}/web.xml">
             <manifest>
                 <attribute name="Built-By" value="${jump.version}"/>
             </manifest>
