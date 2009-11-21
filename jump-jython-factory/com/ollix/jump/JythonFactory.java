@@ -26,12 +26,15 @@ import org.python.core.PySystemState;
 
 public class JythonFactory {
 
+    private final PySystemState state;
     private final Class interfaceType;
     private final PyObject callable;
 
     public JythonFactory(PySystemState state, Class interfaceType,
                          String modulePath, String callable) {
+        this.state = state;
         this.interfaceType = interfaceType;
+
         PyObject importer = state.getBuiltins().__getitem__(
                                     Py.newString("__import__"));
         PyObject module = importer.__call__(Py.newString(modulePath));
@@ -48,8 +51,17 @@ public class JythonFactory {
         this(new PySystemState(), interfaceType, modulePath, callable);
     }
 
+    public JythonFactory(PySystemState state, String modulePath,
+                         String callable) {
+        this(state, null, modulePath, callable);
+    }
+
     public JythonFactory(String modulePath, String callable) {
-        this(null, modulePath, callable);
+        this(new PySystemState(), modulePath, callable);
+    }
+
+    public PySystemState getState() {
+        return state;
     }
 
     private PyObject[] convertToPyArguments(Object... args) {

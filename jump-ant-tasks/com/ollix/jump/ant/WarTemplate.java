@@ -30,9 +30,13 @@ public class WarTemplate extends Task
     private WarTemplateType warTemplate;
 
     public WarTemplate() {
+        JythonFactory supportSitePackages = new JythonFactory(
+            "jump_jython_factory.syspath", "support_site_packages");
+        supportSitePackages.call();
+
         JythonFactory factory = new JythonFactory(
-            WarTemplateType.class, "jump_ant_tasks.war_template", 
-            "WarTemplate");
+            supportSitePackages.getState(), WarTemplateType.class,
+            "jump.ant.war_template", "WarTemplate");
 
         warTemplate = (WarTemplateType) factory.init();
     }
@@ -44,7 +48,7 @@ public class WarTemplate extends Task
     public void setDestDir(String destDir) {
         warTemplate.setDestDir(destDir);
     }
-    
+
     public void setWsgiHandler(String wsgiHandler) {
         warTemplate.setWsgiHandler(wsgiHandler);
     }
@@ -60,7 +64,7 @@ public class WarTemplate extends Task
     public void setLogLevel(String logLevel) {
         warTemplate.setLogLevel(logLevel);
     }
-    
+
     public void setGoogleAppEngine(String googleAppEngine) {
         warTemplate.setGoogleAppEngine(googleAppEngine);
     }

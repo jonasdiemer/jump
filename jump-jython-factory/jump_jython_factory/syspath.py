@@ -25,9 +25,9 @@ import tempfile
 import zipfile
 
 
-def update_sys_path(unpack_eggs=False):
+def support_site_packages(unpack_eggs=False):
     if unpack_eggs:
-        tempdir = os.path.join(tempfile.gettempdir(), 'jump-eggs')
+        tempdir = os.path.join(tempfile.gettempdir(), 'jump.build.eggs')
         # Clean tempdir
         if os.path.isdir(tempdir):
             shutil.rmtree(tempdir)
@@ -36,7 +36,6 @@ def update_sys_path(unpack_eggs=False):
     jython_lib_dir = os.path.join(os.environ['JYTHON_HOME'], 'Lib')
     site_package_dir = os.path.join(jython_lib_dir, 'site-packages')
     easy_install_pth = os.path.join(site_package_dir, 'easy-install.pth')
-    sys.path.insert(0, jython_lib_dir)
     sys.path.insert(0, site_package_dir)
     if os.path.isfile(easy_install_pth):
         for line in open(easy_install_pth, 'r'):

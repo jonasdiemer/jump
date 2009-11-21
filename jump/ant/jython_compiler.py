@@ -22,12 +22,9 @@ import os
 import sys
 import shutil
 
-from com.ollix.jump.ant import JythonCompilerType
-
-from syspath import update_sys_path
-update_sys_path(True)
-
 from pylibtracer.libtracer import LibTracer
+
+from com.ollix.jump.ant import JythonCompilerType
 
 
 class JythonCompiler(JythonCompilerType):

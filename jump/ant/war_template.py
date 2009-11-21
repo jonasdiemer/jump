@@ -23,13 +23,9 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 
-from com.ollix.jump.ant import WarTemplateType
-
-from syspath import update_sys_path
-update_sys_path()
-
 from mako.template import Template
 
+from com.ollix.jump.ant import WarTemplateType
 import jump
 
 

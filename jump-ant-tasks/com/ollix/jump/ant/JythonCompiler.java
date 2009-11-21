@@ -27,13 +27,17 @@ import com.ollix.jump.ant.JythonCompilerType;
 
 public class JythonCompiler extends Task
 {
-    private JythonCompilerType jythonCompiler; 
+    private JythonCompilerType jythonCompiler;
 
     public JythonCompiler() {
+        JythonFactory supportSitePackages = new JythonFactory(
+            "jump_jython_factory.syspath", "support_site_packages");
+        supportSitePackages.call(true);
+
         JythonFactory factory = new JythonFactory(
-            JythonCompilerType.class, "jump_ant_tasks.jython_compiler",
-            "JythonCompiler");
-        
+            supportSitePackages.getState(), JythonCompilerType.class,
+            "jump.ant.jython_compiler", "JythonCompiler");
+
         jythonCompiler = (JythonCompilerType) factory.init();
     }
 

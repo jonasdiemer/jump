@@ -30,17 +30,21 @@ public class JythonDriver extends Task
     private JythonDriverType jythonDriver;
 
     public JythonDriver() {
+        JythonFactory supportSitePackages = new JythonFactory(
+            "jump_jython_factory.syspath", "support_site_packages");
+        supportSitePackages.call();
+
         JythonFactory factory = new JythonFactory(
-            JythonDriverType.class, "jump_ant_tasks.jython_driver",
-            "JythonDriver");
-        
+            supportSitePackages.getState(), JythonDriverType.class,
+            "jump.ant.jython_driver", "JythonDriver");
+
         jythonDriver = (JythonDriverType) factory.init();
     }
 
     public void execute() throws BuildException {
         jythonDriver.execute();
     }
-    
+
     public void setMainEntryPoint(String mainEntryPoint) {
         jythonDriver.setMainEntryPoint(mainEntryPoint);
     }
