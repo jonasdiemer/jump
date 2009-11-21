@@ -1,2 +1,3 @@
 dist_dir = ../jump/lib
+jump_jython_factory
 java_only
