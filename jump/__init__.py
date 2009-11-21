@@ -25,7 +25,7 @@ import os
 import pkg_resources
 
 
-VERSION = "0.9.6.3"
+VERSION = "0.9.7"
 
 # Directory paths
 jump_dir = os.path.dirname(__file__)
