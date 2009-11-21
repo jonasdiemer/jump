@@ -8,11 +8,11 @@
     <property name="lib.dir" value="lib"/>
     <property name="binlib.dir" value="binlib"/>
 
-    <property name="build.dir" value="build"/>
-    <property name="build.lib.dir" value="build/lib"/>
-    <property name="build.class.dir" value="build/classes"/>
-    <property name="build.resc.dir" value="build/resources"/>
-    <property name="build.tmp.dir" value="build/temp"/>
+    <property name="build.dir" value="${build_dir}"/>
+    <%text><property name="build.lib.dir" value="${build.dir}/lib"/>
+    <property name="build.class.dir" value="${build.dir}/classes"/>
+    <property name="build.resc.dir" value="${build.dir}/resources"/>
+    <property name="build.tmp.dir" value="${build.dir}/temp"/></%text>
 
     <property name="jython.home" value="${jython_home}"/>
     <property name="packages" value="${include_packages}"/>
@@ -183,8 +183,6 @@
             <fileset refid="proj.resc"/>
             <fileset refid="build.resc"/>
         </one-jar>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="jarlib" depends="compile">
@@ -196,8 +194,6 @@
             <fileset refid="proj.resc"/>
             <fileset refid="build.resc"/>
 		</jar>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="app" depends="mainclass,compile">
@@ -259,8 +255,6 @@
                 </if>
             </then>
         </if>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="exe.init" depends="mainclass,compile">
@@ -279,8 +273,6 @@
                 <jre minVersion="1.5.0" maxHeapSize="512"/>
             </config>
         </launch4j>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="exe" depends="exe.init">
@@ -319,8 +311,6 @@
                 <jre minVersion="1.5.0" maxHeapSize="512"/>
             </config>
         </launch4j>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="war" depends="compile">
@@ -358,8 +348,6 @@
                 <include name="appengine-web.xml"/>
             </webinf>
         </war>
-
-        <antcall target="clean"/>
     </target>
 
     <target name="clean">

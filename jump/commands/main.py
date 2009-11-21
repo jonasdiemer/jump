@@ -22,6 +22,7 @@ with Jump.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
+import shutil
 import tempfile
 
 import oparse
@@ -50,6 +51,7 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     # Basic configuration
     base_dir = os.getcwd()
+    build_dir = 'build'
     config_filename = os.path.join(base_dir, 'config.jp')
     manifest_filename = os.path.join(base_dir, 'manifest.jp')
     build_xml_filename = os.path.join(tempfile.gettempdir(), 'build.xml')
@@ -81,6 +83,7 @@ You can find more about Jump at http://gitorious.org/jump."""
         """Setup distribuiton enviroments"""
         self.options = options
         options.base_dir = self.base_dir
+        options.build_dir = self.build_dir
         options.jump_dir = jump.jump_dir
         options.jump_version = "Jump %s" % jump.VERSION
 
@@ -143,6 +146,7 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     def clean(self):
         os.remove(self.build_xml_filename)
+        shutil.rmtree(os.path.join(self.base_dir, 'build'))
 
 def jump_command():
     """Runs the Jump command."""
