@@ -24,7 +24,6 @@ import os
 
 import oparse
 
-import jump
 from jump.commands.main import JumpCommand
 
 
