@@ -88,7 +88,6 @@ You can find more about Jump at http://gitorious.org/jump."""
         for option in ['java_only', 'jump_jython_factory']:
             options[option] = "true" if options[option] else "false"
 
-
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)
 
