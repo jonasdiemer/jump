@@ -27,7 +27,7 @@ from com.ollix.jump.ant import JythonCompilerType
 from syspath import update_sys_path
 update_sys_path(True)
 
-from jump_ant_tasks.libtracer import LibTracer
+from pylibtracer.libtracer import LibTracer
 
 
 class JythonCompiler(JythonCompilerType):
