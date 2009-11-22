@@ -46,7 +46,7 @@ class JumpCommand(oparse.Command):
     usage = '%prog command [options] arg1 arg2 ...'
     description = """Jump is a build tool for distributing Jython applications.
 You can find more about Jump at http://gitorious.org/jump."""
-    version = '%prog ' + jump.VERSION
+    version = '%prog ' + jump.distro.version
     subcommand_entry_point = 'jump.commands'
 
     # Basic configuration
@@ -85,7 +85,7 @@ You can find more about Jump at http://gitorious.org/jump."""
         options.base_dir = self.base_dir
         options.build_dir = self.build_dir
         options.jump_dir = jump.jump_dir
-        options.jump_version = "Jump %s" % jump.VERSION
+        options.jump_version = "Jump %s" % jump.distro.version
 
         # Convert boolean values
         self.convert_boolean_values(['java_only', 'jump_jython_factory'])

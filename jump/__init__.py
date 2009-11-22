@@ -25,7 +25,7 @@ import os
 import pkg_resources
 
 
-VERSION = "0.9.7"
+distro = pkg_resources.get_distribution('jump')
 
 # Directory paths
 jump_dir = os.path.dirname(__file__)

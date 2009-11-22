@@ -29,15 +29,13 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
-import jump
-
 
 if not sys.platform.startswith('java'):
     print 'error: Jump can only be installed with Jython.'
     sys.exit()
 
 setup(name='jump',
-      version=jump.VERSION,
+      version='0.9.7',
       description='Jump is a build tool for distributing Jython applications.',
       license="GPLv3",
       author='Olli Wang',
