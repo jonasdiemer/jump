@@ -64,7 +64,7 @@ setup(name='jump',
       """,
       classifiers=[
           'Intended Audience :: Developers',
-          "License :: OSI Approved",
+          'License :: OSI Approved',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
           'Topic :: Software Development :: Build Tools',
