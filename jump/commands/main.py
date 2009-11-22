@@ -109,6 +109,17 @@ You can find more about Jump at http://gitorious.org/jump."""
         options.gae_id = gae_id if options.google_app_engine else ""
         options.gae_version = gae_version if options.google_app_engine else ""
 
+        # Make sure all binaries have execute permission
+        bin_verified_metadata = 'bin_verified'
+        if not jump.distro.has_metadata(bin_verified_metadata):
+            egg_info_dir = os.path.join(jump.distro.location, 'EGG-INFO')
+            if os.path.isdir(egg_info_dir):
+                for filename in ('ld', 'windres'):
+                    bin_path = os.path.join(jump.lib_dir, 'launch4j', 'bin',
+                                            filename)
+                    os.chmod(bin_path, 0755)
+                open(os.path.join(egg_info_dir, bin_verified_metadata), 'w')
+
     def convert_boolean_values(self, option_names, use_number=False):
         """Convert boolean values to true or false respectively."""
         if use_number:
