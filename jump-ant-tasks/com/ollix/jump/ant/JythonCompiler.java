@@ -31,12 +31,12 @@ public class JythonCompiler extends Task
 
     public JythonCompiler() {
         JythonFactory supportSitePackages = new JythonFactory(
-            "jump_jython_factory.syspath", "support_site_packages");
+            "jump_jython_factory.syspath:support_site_packages");
         supportSitePackages.call(true);
 
         JythonFactory factory = new JythonFactory(
             supportSitePackages.getState(), JythonCompilerType.class,
-            "jump.ant.jython_compiler", "JythonCompiler");
+            "jump.ant.jython_compiler:JythonCompiler");
 
         jythonCompiler = (JythonCompilerType) factory.init();
     }

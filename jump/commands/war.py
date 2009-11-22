@@ -49,8 +49,6 @@ class JumpWarCommand(JumpCommand):
     def command(self, args, options):
         """Executes the command."""
         self.initialize(options)
-        # Convert boolean values
-        self.convert_boolean_values(['cache_callables', 'no_multithread'])
         # Create build.xml
         self.create_template_file(self.build_xml_template,
                                   self.build_xml_filename)

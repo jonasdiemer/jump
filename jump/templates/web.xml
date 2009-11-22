@@ -13,11 +13,11 @@
         </init-param>
         <init-param>
             <param-name>multithread</param-name>
-            <param-value>${0 if no_multithread == "true" else 1}</param-value>
+            <param-value>${multithread}</param-value>
         </init-param>
         <init-param>
             <param-name>cache_callables</param-name>
-            <param-value>${1 if cache_callables == "true" else 0}</param-value>
+            <param-value>${cache_callables}</param-value>
         </init-param>
         <init-param>
             <param-name>log_level</param-name>

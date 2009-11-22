@@ -36,9 +36,11 @@
 
     <property name="war.googleAppEngine" value="${google_app_engine}"/>
     <property name="war.wsgihandler" value="${wsgi_handler}"/>
-    <property name="war.nomultithread" value="${no_multithread}"/>
+    <property name="war.multithread" value="${multithread}"/>
     <property name="war.cachecallables" value="${cache_callables}"/>
     <property name="war.loglevel" value="${log_level}"/>
+    <property name="war.gae.id" value="${gae_id}"/>
+    <property name="war.gae.version" value="${gae_version}"/>
 
     <%text><fileset dir="${lib.dir}" id="proj.lib">
         <include name="**/*.jar"/>
@@ -82,6 +84,9 @@
         <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                  classpathref="jump.classpath"/>
 
+        <taskdef name="fmpp" classpathref="jump.classpath"
+                 classname="fmpp.tools.AntTask"/>
+
         <if>
             <not>
                 <available file="${jython.home}/jythonlib.jar"/>
@@ -121,13 +126,16 @@
     </target>
 
     <target name="mainclass" depends="env">
-        <taskdef name="jythondriver" classpathref="jump.classpath"
-                 classname="com.ollix.jump.ant.JythonDriver"/>
-        <jythondriver mainentrypoint="${mainEntryPoint}"
-                      destdir="${build.tmp.dir}"/>
         <if>
-            <available file="${build.tmp.dir}/Main.java"/>
+            <contains string="${mainEntryPoint}" substring=":"/>
             <then>
+                <echo>Creating Jython driver: ${build.tmp.dir}/Main.java</echo>
+                <fmpp sourceFile="${jump.dir}/templates/Main.java"
+                      outputFile="${build.tmp.dir}/Main.java">
+                    <data>
+                        main_entry_point: antProperty(mainEntryPoint)
+                    </data>
+                </fmpp>
                 <property name="mainClass" value="com.ollix.jump.Main"/>
             </then>
             <else>
@@ -320,19 +328,33 @@
             </manifest>
         </jar>
 
-        <property name="war.wsgihandler" value="${wsgi_handler}"/>
-        <property name="war.nomultithread" value="${no_multithread}"/>
-        <property name="war.cachecallables" value="${cache_callables}"/>
-        <property name="war.loglevel" value="${log_level}"/>
+        <echo>Creating web.xml file: ${build.tmp.dir}/web.xml</echo>
+        <fmpp sourceFile="${jump.dir}/templates/web.xml"
+              outputFile="${build.tmp.dir}/web.xml">
+            <data>
+                wsgi_handler: antProperty(war.wsgihandler)
+                multithread: antProperty(war.multithread)
+                cache_callables: antProperty(war.cachecallables)
+                log_level: antProperty(war.loglevel)
+            </data>
+        </fmpp>
 
-        <taskdef name="wartemplate" classpathref="jump.classpath"
-                 classname="com.ollix.jump.ant.WarTemplate"/>
-        <wartemplate destdir="${build.tmp.dir}"
-                     wsgihandler="${war.wsgihandler}"
-                     nomultithread="${war.nomultithread}"
-                     cachecallables="${war.cachecallables}"
-                     loglevel="${war.loglevel}"
-                     googleappengine="${war.googleAppEngine}"/>
+        <if>
+            <and>
+                <length string="${war.gae.id}" when="greater" length="0"/>
+                <length string="${war.gae.version}" when="greater" length="0"/>
+            </and>
+            <then>
+                <echo>Creating appengine-web.xml file: ${build.tmp.dir}/appengine-web.xml</echo>
+                <fmpp sourceFile="${jump.dir}/templates/appengine-web.xml"
+                      outputFile="${build.tmp.dir}/appengine-web.xml">
+                    <data>
+                        gae_id: antProperty(war.gae.id)
+                        gae_version: antProperty(war.gae.version)
+                    </data>
+                </fmpp>
+            </then>
+        </if>
 
         <war destfile="${dist.dir}/${dist.name}.war"
              webxml="${build.tmp.dir}/web.xml">

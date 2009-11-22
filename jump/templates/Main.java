@@ -24,7 +24,7 @@ import com.ollix.jump.JythonFactory;
 
 public class Main {
     public static void main(String[] args) {
-        JythonFactory factory = new JythonFactory("${py_main_module}", "${py_main_func}");
+        JythonFactory factory = new JythonFactory("${main_entry_point}");
         factory.call();
     }
 }

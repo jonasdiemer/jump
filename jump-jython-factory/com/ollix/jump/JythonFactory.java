@@ -31,9 +31,10 @@ public class JythonFactory {
     private final PyObject callable;
 
     public JythonFactory(PySystemState state, Class interfaceType,
-                         String modulePath, String callable) {
-        this.state = state;
-        this.interfaceType = interfaceType;
+                         String callablePath) {
+        String[] path = callablePath.split(":");
+        String modulePath = path[0];
+        String callableName = path[1];
 
         PyObject importer = state.getBuiltins().__getitem__(
                                     Py.newString("__import__"));
@@ -43,21 +44,22 @@ public class JythonFactory {
             String moduleName = modules[i];
             module = module.__getattr__(moduleName);
         }
-        this.callable = module.__getattr__(callable);
+        this.callable = module.__getattr__(callableName);
+
+        this.state = state;
+        this.interfaceType = interfaceType;
     }
 
-    public JythonFactory(Class interfaceType, String modulePath,
-                         String callable) {
-        this(new PySystemState(), interfaceType, modulePath, callable);
+    public JythonFactory(Class interfaceType, String callablePath) {
+        this(new PySystemState(), interfaceType, callablePath);
     }
 
-    public JythonFactory(PySystemState state, String modulePath,
-                         String callable) {
-        this(state, null, modulePath, callable);
+    public JythonFactory(PySystemState state, String callablePath) {
+        this(state, null, callablePath);
     }
 
-    public JythonFactory(String modulePath, String callable) {
-        this(new PySystemState(), modulePath, callable);
+    public JythonFactory(String callablePath) {
+        this(new PySystemState(), callablePath);
     }
 
     public PySystemState getState() {

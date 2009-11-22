@@ -90,19 +90,33 @@ You can find more about Jump at http://gitorious.org/jump."""
         # Convert boolean values
         self.convert_boolean_values(['java_only', 'jump_jython_factory'])
 
+        options.multithread = not options.no_multithread
+        self.convert_boolean_values(['cache_callables', 'multithread'], True)
+
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)
 
         # Set Jython's root directory
         os.environ['JYTHON_HOME'] = options.jython_home = sys.prefix
 
-    def convert_boolean_values(self, option_names):
+        # War options
+        if options.google_app_engine:
+            try:
+                gae_id, gae_version = options.google_app_engine.split(':')
+            except ValueError:
+                raise oparse.CommandError("`google_app_engine` parameter " \
+                                          "is not set properly.")
+        options.gae_id = gae_id if options.google_app_engine else ""
+        options.gae_version = gae_version if options.google_app_engine else ""
+
+    def convert_boolean_values(self, option_names, use_number=False):
         """Convert boolean values to true or false respectively."""
-        for option_name in option_names:
-            if self.options[option_name]:
-                self.options[option_name] = "true"
-            else:
-                self.options[option_name] = "false"
+        if use_number:
+            true, false = 1, 0
+        else:
+            true, false = "true", "false"
+        for name in option_names:
+            self.options[name] = true if self.options[name] else false
 
     def extract_manifest_patterns(self, options):
         """Extracts patterns in manifest file."""
