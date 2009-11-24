@@ -117,7 +117,10 @@
         </if>
 
         <if>
-            <istrue value="${jump.jythonfactory}"/>
+			<or>
+            	<istrue value="${jump.jythonfactory}"/>
+				<contains string="${mainEntryPoint}" substring=":"/>
+			</or>
             <then>
                 <copy file="${jump.dir}/lib/jump-jython-factory.jar"
                       todir="${build.lib.dir}"/>
