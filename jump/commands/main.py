@@ -52,8 +52,7 @@ You can find more about Jump at http://gitorious.org/jump."""
     # Basic configuration
     base_dir = os.getcwd()
     build_dir = 'build'
-    config_filename = os.path.join(base_dir, 'config.jp')
-    manifest_filename = os.path.join(base_dir, 'manifest.jp')
+    config_filename = os.path.join(base_dir, 'jump.cfg')
     build_xml_filename = os.path.join(tempfile.gettempdir(), 'build.xml')
     build_xml_template = os.path.join(jump.temp_dir, 'build.xml')
     default_dist_name = os.path.basename(base_dir)
@@ -129,18 +128,30 @@ You can find more about Jump at http://gitorious.org/jump."""
         for name in option_names:
             self.options[name] = true if self.options[name] else false
 
-    def extract_manifest_patterns(self, options):
+    def extract_manifest_patterns(self, options, section_name='manifest'):
         """Extracts patterns in manifest file."""
-        if not os.path.isfile(self.manifest_filename):
+        if not self.config or not self.config.has_section(section_name):
             options.manifest_patterns = []
             return
 
         manifest_patterns = []
-        for line in open(self.manifest_filename, 'r'):
+        in_section = False
+        for line in open(self.config_filename, 'r'):
             # Ignore from `#` to the end of line
             line = line.split('#', 1)[0].strip()
             if not line:
                 continue
+
+            # Find the right section
+            if not in_section:
+                if line == '[%s]' % section_name:
+                    in_section = True
+                continue
+
+            # Reached the end of the section
+            if line.startswith('['):
+                break
+
             # Retrieve patterns
             try:
                 command, pattern = line.split(' ', 1)
