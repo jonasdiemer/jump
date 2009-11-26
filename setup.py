@@ -46,7 +46,7 @@ setup(name='jump',
       include_package_data=True,
       zip_safe=False,
       install_requires=['oparse>=0.9.1',
-                        'pylibtracer>=0.9.0',
+                        'pylibtracer>=0.9.1dev',
                         'mako>=0.2.5'],
       extras_require = {},
       entry_points="""
