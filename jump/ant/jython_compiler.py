@@ -30,19 +30,18 @@ from com.ollix.jump.ant import JythonCompilerType
 class JythonCompiler(JythonCompilerType):
     """Copies and compiles required Python modules to specified directory."""
 
-    def __init__(self, dest_dir=None, packages=None):
+    def __init__(self, dest_dir=None, include_packages=None,
+                 ignore_packages=None):
         self.dest_dir = dest_dir
-        self.packages = packages
+        self.include_packages = self.setFullPackages(include_packages)
+        self.ignore_packages = self.setIgnorePackages(ignore_packages)
 
     def execute(self):
-        if self.packages:
-            packages = [p.strip() for p in self.packages.split(',')]
-        else:
-            packages = []
-
         # Copy dependent files to specified directory
         sys.path.append(self.dest_dir)
-        lib_tracer = LibTracer(full_packages=packages, quiet=True)
+        lib_tracer = LibTracer(full_packages=self.include_packages,
+                               ignore_packages=self.ignore_packages,
+                               quiet=True)
         count = lib_tracer.copy_to(self.dest_dir)
         if count:
             print 'Copy %d files to %s' % (count, self.dest_dir)
@@ -50,5 +49,13 @@ class JythonCompiler(JythonCompilerType):
     def setDestDir(self, dest_dir):
         self.dest_dir = dest_dir
 
+    def __formatPackages(self, packages):
+        if packages:
+            return [p.strip() for p in packages.split(',')]
+        return []
+
     def setFullPackages(self, packages):
-        self.packages = packages
+        self.include_packages = self.__formatPackages(packages)
+
+    def setIgnorePackages(self, packages):
+        self.ignore_packages = self.__formatPackages(packages)

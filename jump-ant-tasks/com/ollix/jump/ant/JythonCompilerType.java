@@ -26,4 +26,5 @@ public interface JythonCompilerType {
     public void execute() throws BuildException;
     public void setDestDir(String destDir);
     public void setFullPackages(String packages);
+    public void setIgnorePackages(String packages);
 }

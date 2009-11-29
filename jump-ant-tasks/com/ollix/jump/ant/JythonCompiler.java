@@ -52,4 +52,8 @@ public class JythonCompiler extends Task
     public void setFullPackages(String packages) {
         jythonCompiler.setFullPackages(packages);
     }
+
+    public void setIgnorePackages(String packages) {
+        jythonCompiler.setIgnorePackages(packages);
+    }
 }

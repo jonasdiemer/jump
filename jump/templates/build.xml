@@ -15,7 +15,8 @@
     <property name="build.tmp.dir" value="${build.dir}/temp"/></%text>
 
     <property name="jython.home" value="${jython_home}"/>
-    <property name="packages" value="${include_packages}"/>
+    <property name="includePackages" value="${include_packages}"/>
+    <property name="ignorePackages" value="${ignore_packages}"/>
 
     <property name="jump.dir" value="${jump_dir}"/>
     <property name="jump.version" value="${jump_version}"/>
@@ -160,7 +161,8 @@
                 <taskdef name="jythonc" classpathref="jump.classpath"
                          classname="com.ollix.jump.ant.JythonCompiler"/>
                 <jythonc destdir="${build.class.dir}"
-                         fullpackages="${packages}"/>
+                         fullpackages="${includePackages}"
+                         ignorepackages="${ignorePackages}"/>
             </then>
         </if>
     </target>

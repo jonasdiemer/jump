@@ -66,6 +66,8 @@ You can find more about Jump at http://gitorious.org/jump."""
                       help="name of the distribution file")
     parser.add_option('-p', '--include_packages', action="store",
                       default="", help="include full Python packages")
+    parser.add_option('--ignore_packages', action="store",
+                      default="", help="ignore Python packages")
     parser.add_option('-d', '--dist_dir', action="store",
                       default=os.path.join(base_dir, 'dist'),
                       help="directory to put the distribution")
