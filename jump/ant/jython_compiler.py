@@ -43,8 +43,8 @@ class JythonCompiler(JythonCompilerType):
         # Find all required Python modules or packages and copy them
         # to the specified destnation directory
         sys.path.append(self.dest_dir)
-        lib_tracer = LibTracer('.', quiet=True, full_packages=packages)
-        lib_locations = lib_tracer.get_lib_locations()
+        lib_tracer = LibTracer(full_packages=packages, quiet=True,)
+        lib_locations = lib_tracer.get_file_locations(compile_all=False)
         for sys_path, relative_path in lib_locations:
             src_path = os.path.join(sys_path, relative_path)
             dest_path = os.path.join(self.dest_dir, relative_path)
