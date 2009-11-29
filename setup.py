@@ -36,7 +36,8 @@ if not sys.platform.startswith('java'):
 
 setup(name='jump',
       version='0.9.7.2',
-      description='Jump is a build tool for distributing Jython applications.',
+      description='Jump is a build tool for distributing Java and Jython ' \
+                  'applications in a really simple step.',
       license="GPLv3",
       author='Olli Wang',
       author_email='olliwang@ollix.com',
