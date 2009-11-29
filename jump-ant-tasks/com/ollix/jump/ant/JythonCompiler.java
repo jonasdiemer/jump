@@ -32,7 +32,7 @@ public class JythonCompiler extends Task
     public JythonCompiler() {
         JythonFactory supportSitePackages = new JythonFactory(
             "jump_jython_factory.syspath:support_site_packages");
-        supportSitePackages.call(true);
+        supportSitePackages.call();
 
         JythonFactory factory = new JythonFactory(
             supportSitePackages.getState(), JythonCompilerType.class,

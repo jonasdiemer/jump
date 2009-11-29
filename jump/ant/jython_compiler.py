@@ -36,24 +36,16 @@ class JythonCompiler(JythonCompilerType):
 
     def execute(self):
         if self.packages:
-            packages = self.packages.split(',')
+            packages = [p.strip() for p in self.packages.split(',')]
         else:
             packages = []
 
-        # Find all required Python modules or packages and copy them
-        # to the specified destnation directory
+        # Copy dependent files to specified directory
         sys.path.append(self.dest_dir)
-        lib_tracer = LibTracer(full_packages=packages, quiet=True,)
-        lib_locations = lib_tracer.get_file_locations(compile_all=False)
-        for sys_path, relative_path in lib_locations:
-            src_path = os.path.join(sys_path, relative_path)
-            dest_path = os.path.join(self.dest_dir, relative_path)
-            dest_dirname = os.path.dirname(dest_path)
-            if not os.path.isdir(dest_dirname):
-                os.makedirs(dest_dirname)
-            shutil.copy2(src_path, dest_path)
-        print 'Compiling %d source files to %s' % (len(lib_locations),
-                                                   self.dest_dir)
+        lib_tracer = LibTracer(full_packages=packages, quiet=True)
+        count = lib_tracer.copy_to(self.dest_dir)
+        if count:
+            print 'Copy %d files to %s' % (count, self.dest_dir)
 
     def setDestDir(self, dest_dir):
         self.dest_dir = dest_dir
