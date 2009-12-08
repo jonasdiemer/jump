@@ -20,6 +20,7 @@
 
 package com.ollix.jump;
 
+import java.util.Properties;
 import org.python.core.Py;
 import org.python.core.PyObject;
 import org.python.core.PySystemState;
@@ -51,7 +52,7 @@ public class JythonFactory {
     }
 
     public JythonFactory(Class interfaceType, String callablePath) {
-        this(new PySystemState(), interfaceType, callablePath);
+        this(createPySystemState(), interfaceType, callablePath);
     }
 
     public JythonFactory(PySystemState state, String callablePath) {
@@ -59,7 +60,21 @@ public class JythonFactory {
     }
 
     public JythonFactory(String callablePath) {
-        this(new PySystemState(), callablePath);
+        this(createPySystemState(), callablePath);
+    }
+
+    public static PySystemState createPySystemState() {
+        /* Determine cachdir path */
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        String username = System.getProperty("user.name");
+        String cachedir = tmpdir + "jump-jython-cachedir-" + username;
+        /* Initialize state with temporary cachedir directory */
+        Properties postProperties = System.getProperties();
+        Properties preProperties = System.getProperties();
+        preProperties.setProperty("python.cachedir", cachedir);
+        PySystemState pySystemState = new PySystemState();
+        pySystemState.initialize(preProperties, postProperties);
+        return pySystemState;
     }
 
     public PySystemState getState() {
