@@ -63,15 +63,17 @@ public class JythonFactory {
         this(createPySystemState(), callablePath);
     }
 
-    public static PySystemState createPySystemState() {
-        /* Determine cachdir path */
+    private static String getCachedirPath() {
         String tmpdir = System.getProperty("java.io.tmpdir");
         String username = System.getProperty("user.name");
-        String cachedir = tmpdir + "jump-jython-cachedir-" + username;
+        return tmpdir + "jump-jython-cachedir-" + username;
+    }
+
+    private static PySystemState createPySystemState() {
         /* Initialize state with temporary cachedir directory */
         Properties postProperties = System.getProperties();
         Properties preProperties = System.getProperties();
-        preProperties.setProperty("python.cachedir", cachedir);
+        preProperties.setProperty("python.cachedir", getCachedirPath());
         PySystemState pySystemState = new PySystemState();
         pySystemState.initialize(preProperties, postProperties);
         return pySystemState;
