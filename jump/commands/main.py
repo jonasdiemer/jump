@@ -59,25 +59,23 @@ You can find more about Jump at http://gitorious.org/jump."""
 
     # Command options
     parser = oparse.OptionParser()
-    parser.add_option('-v', '--verbose', action="store_true",
-                      default=False, help="run in verbose mode")
-    parser.add_option('-n', '--dist_name', action="store",
+    parser.add_option('-v', '--verbose', action="store_true", default=False,
+                      help="run in verbose mode")
+    parser.add_option('-n', '--dist-name', action="store",
                       default=default_dist_name,
                       help="name of the distribution file")
-    parser.add_option('-p', '--include_packages', action="store",
-                      default="", help="include full Python packages")
-    parser.add_option('--ignore_packages', action="store",
-                      default="", help="ignore Python packages")
-    parser.add_option('-d', '--dist_dir', action="store",
+    parser.add_option('-p', '--include-packages', action="store", default="",
+                      help="include full Python packages")
+    parser.add_option('--ignore-packages', action="store", default="",
+                      help="ignore Python packages")
+    parser.add_option('-d', '--dist-dir', action="store",
                       default=os.path.join(base_dir, 'dist'),
                       help="directory to put the distribution")
-    parser.add_option('-m', '--main_entry_point', action="store",
-                      default=None, help="main entry point, either Java or " \
-                                         "Python")
-    parser.add_option('--java_only', action="store_true",
-                      default=False, help="Ignore any Jython code and " \
-                                          "JAR file")
-    parser.add_option('--jump_jython_factory', action="store_true",
+    parser.add_option('-m', '--main-entry-point', action="store", default=None,
+                      help="main entry point, either Java or Python")
+    parser.add_option('--java-only', action="store_true", default=False,
+                      help="Ignore all Jython code and JAR files")
+    parser.add_option('--jump-jython-factory', action="store_true",
                       default=False, help="Use Jump's Jython factory.")
 
     def initialize(self, options):
@@ -91,8 +89,9 @@ You can find more about Jump at http://gitorious.org/jump."""
         # Convert boolean values
         self.convert_boolean_values(['java_only', 'jump_jython_factory'])
 
-        options.multithread = not options.no_multithread
-        self.convert_boolean_values(['cache_callables', 'multithread'], True)
+        options.war_multithread = not options.war_no_multithread
+        self.convert_boolean_values(['war_cache_callables',
+                                     'war_multithread'], True)
 
         # Extracts patterns in manifest file
         self.extract_manifest_patterns(options)
@@ -101,14 +100,17 @@ You can find more about Jump at http://gitorious.org/jump."""
         os.environ['JYTHON_HOME'] = options.jython_home = sys.prefix
 
         # War options
-        if options.google_app_engine:
+        if options.war_google_app_engine:
             try:
-                gae_id, gae_version = options.google_app_engine.split(':')
+                gae_id, gae_version = options.war_google_app_engine.split(':')
             except ValueError:
-                raise oparse.CommandError("`google_app_engine` parameter " \
-                                          "is not set properly.")
-        options.gae_id = gae_id if options.google_app_engine else ""
-        options.gae_version = gae_version if options.google_app_engine else ""
+                raise oparse.CommandError("`war_google_app_engine` " \
+                                          "parameter is not set properly.")
+            options.war_gae_id = gae_id
+            options.war_gae_version = gae_version
+        else:
+            options.war_gae_id = ""
+            options.war_gae_version = ""
 
         # Make sure all binaries have execute permission
         bin_verified_metadata = 'bin_verified'

@@ -32,19 +32,18 @@ class JumpWarCommand(JumpCommand):
     """
     usage = "make a War file for Python WSGI applications"
     parser = oparse.OptionParser()
-    parser.add_option('--wsgi_handler', action="store",
+    parser.add_option('--war-wsgi-handler', action="store",
                       default='application.handler',
                       help="callable wsgi handler")
-    parser.add_option('--log_level', action="store", default='debug',
+    parser.add_option('--war-log-level', action="store", default='debug',
                       help="the level of diagnostic output should be logged")
-    parser.add_option('--cache_callables', action="store_true",
+    parser.add_option('--war-cache-callables', action="store_true",
                       default=False,  help="whether or not it should cache " \
                                            "any callables it creates")
-    parser.add_option('-g', '--google_app_engine', action="store",
-                      default="",  help="should set in the form of " \
-                                          "`ID:VERSION`")
-    parser.add_option('--no_multithread', action="store_true", default=False,
-                      help="whether to run in multithread mode")
+    parser.add_option('--war-google-app-engine', action="store", default="",
+                      help="should set in the form of `ID:VERSION`")
+    parser.add_option('--war-no-multithread', action="store_true",
+                      default=False, help="whether to run in multithread mode")
 
     def command(self, args, options):
         """Executes the command."""

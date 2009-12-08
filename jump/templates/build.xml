@@ -22,26 +22,26 @@
     <property name="jump.version" value="${jump_version}"/>
     <property name="jump.jythonfactory" value="${jump_jython_factory}"/>
 
-    <property name="app.shortname" value="${short_name}"/>
-    <property name="app.icns" value="${icns}"/>
-    <property name="app.vmarguments" value="${vm_arguments}"/>
-    <property name="app.vmoptions" value="${vm_options}"/>
-    <property name="app.developmentregion" value="${development_region}"/>
-    <property name="app.infostring" value="${info_string}"/>
-    <property name="app.jvmversion" value="${jvm_version}"/>
-    <property name="app.signature" value="${signature}"/>
+    <property name="app.shortname" value="${app_short_name}"/>
+    <property name="app.icns" value="${app_icon}"/>
+    <property name="app.vmarguments" value="${app_vm_arguments}"/>
+    <property name="app.vmoptions" value="${app_vm_options}"/>
+    <property name="app.developmentregion" value="${app_development_region}"/>
+    <property name="app.infostring" value="${app_info_string}"/>
+    <property name="app.jvmversion" value="${app_jvm_version}"/>
+    <property name="app.signature" value="${app_signature}"/>
 
-    <property name="exe.onefile" value="${'true' if onefile else 'false'}"/>
-    <property name="exe.gui" value="${'gui' if gui else 'console'}"/>
-    <property name="exe.ico" value="${ico}"/>
+    <property name="exe.onefile" value="${'true' if exe_onefile else 'false'}"/>
+    <property name="exe.gui" value="${'gui' if exe_gui else 'console'}"/>
+    <property name="exe.ico" value="${exe_icon}"/>
 
-    <property name="war.googleAppEngine" value="${google_app_engine}"/>
-    <property name="war.wsgihandler" value="${wsgi_handler}"/>
-    <property name="war.multithread" value="${multithread}"/>
-    <property name="war.cachecallables" value="${cache_callables}"/>
-    <property name="war.loglevel" value="${log_level}"/>
-    <property name="war.gae.id" value="${gae_id}"/>
-    <property name="war.gae.version" value="${gae_version}"/>
+    <property name="war.googleAppEngine" value="${war_google_app_engine}"/>
+    <property name="war.wsgihandler" value="${war_wsgi_handler}"/>
+    <property name="war.multithread" value="${war_multithread}"/>
+    <property name="war.cachecallables" value="${war_cache_callables}"/>
+    <property name="war.loglevel" value="${war_log_level}"/>
+    <property name="war.gae.id" value="${war_gae_id}"/>
+    <property name="war.gae.version" value="${war_gae_version}"/>
 
     <%text><fileset dir="${lib.dir}" id="proj.lib">
         <include name="**/*.jar"/>

@@ -32,12 +32,12 @@ class JumpExeCommand(JumpCommand):
     """
     usage = "make Windows native executables"
     parser = oparse.OptionParser()
-    parser.add_option('--gui', action="store_true", default=False,
+    parser.add_option('--exe-gui', action="store_true", default=False,
                       help="use GUI instead of console mode")
-    parser.add_option('--ico', action="store",
+    parser.add_option('--exe-icon', action="store",
                       default='${jump.dir}/resources/jump.ico',
                       help="application icon in ICO format")
-    parser.add_option('--onefile', action="store_true", default=False,
+    parser.add_option('--exe-onefile', action="store_true", default=False,
                       help="generate only one exe file")
     required_options = ['main_entry_point']
 
@@ -47,5 +47,5 @@ class JumpExeCommand(JumpCommand):
         # Create build.xml
         self.create_template_file(self.build_xml_template,
                                   self.build_xml_filename)
-        target = 'oneexe' if options.onefile else 'exe'
+        target = 'oneexe' if options.exe_onefile else 'exe'
         os.system('ant %s -buildfile %s' % (target, self.build_xml_filename))

@@ -32,27 +32,27 @@ class JumpAppCommand(JumpCommand):
     """
     usage = "make Mac Application Bundles"
     parser = oparse.OptionParser()
-    parser.add_option('--vm_arguments', action="store", default="",
+    parser.add_option('--app-vm-arguments', action="store", default="",
                       help="extra command-line arguments for the Java " \
                            "application")
-    parser.add_option('--development_region', action="store",
+    parser.add_option('--app-development-region', action="store",
                       default="English", help="the development region of " \
                                               "the bundle")
-    parser.add_option('--icns', action="store",
+    parser.add_option('--app-icon', action="store",
                       default="${jump.dir}/resources/jump.icns",
                       help="file reference to a Mac OS X icon file")
-    parser.add_option('--info_string', action="store", default="",
+    parser.add_option('--app-info-string', action="store", default="",
                       help="a string for display in the Finder's Get Info " \
                            "panel")
-    parser.add_option('--jvm_version', action="store", default="1.5+",
+    parser.add_option('--app-jvm-version', action="store", default="1.5+",
                       help="the version of the JVM required to run the " \
                            "application")
-    parser.add_option("--short_name", action="store",
+    parser.add_option("--app-short-name", action="store",
                       default=JumpCommand.default_dist_name,
                       help="the string used in the application menu")
-    parser.add_option("--signature", action="store", default="????",
+    parser.add_option("--app-signature", action="store", default="????",
                       help="the four-letter code identifying the bundle")
-    parser.add_option("--vm_options", action="store", default="",
+    parser.add_option("--app-vm-options", action="store", default="",
                       help="command line options to pass the JVM at startup")
     required_options = ['main_entry_point']
 
