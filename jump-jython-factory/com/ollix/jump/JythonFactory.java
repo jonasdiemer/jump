@@ -20,6 +20,7 @@
 
 package com.ollix.jump;
 
+import java.io.File;
 import java.util.Properties;
 import org.python.core.Py;
 import org.python.core.PyObject;
@@ -65,6 +66,8 @@ public class JythonFactory {
 
     private static String getCachedirPath() {
         String tmpdir = System.getProperty("java.io.tmpdir");
+        if (!tmpdir.endsWith(File.separator))
+            tmpdir += File.separator;
         String username = System.getProperty("user.name");
         return tmpdir + "jump-jython-cachedir-" + username;
     }
