@@ -1,5 +1,10 @@
 CHANGES
 =======
+v0.9.7.4
+========
+* Fixed loading manifest section error in config file.
+* Fixed temporary directory path on Unix-like operating system.
+
 v0.9.7.3
 ========
 * Puts cachdir directory in system temporary directory by default.
