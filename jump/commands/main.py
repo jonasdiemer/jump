@@ -158,11 +158,13 @@ You can find more about Jump at http://gitorious.org/jump."""
 
             # Retrieve patterns
             try:
-                command, pattern = line.split(' ', 1)
+                command, pattern = line.split('=', 1)
             except ValueError:
                 error_message = "Syntax error in manifest file: %r" % line
                 raise jump.commands.CommandError(error_message)
             # Raise error if command is invalid
+            command = command.strip()
+            pattern = pattern.strip()
             if command not in ['include', 'exclude']:
                 error_message = "Command not supported in manifest file: " \
                                 "%r" % command
