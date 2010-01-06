@@ -35,7 +35,7 @@ if not sys.platform.startswith('java'):
     sys.exit()
 
 setup(name='jump',
-      version='0.9.7.3',
+      version='0.9.7.4',
       description='Jump is a build tool for distributing Java and Jython ' \
                   'applications in a really simple step.',
       license="GPLv3",
